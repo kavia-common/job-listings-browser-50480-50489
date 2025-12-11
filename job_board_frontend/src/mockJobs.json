@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "title": "Frontend Engineer",
+    "company": "BlueWave Labs",
+    "location": "Remote",
+    "type": "Full-time",
+    "tags": ["React", "JavaScript", "CSS"],
+    "postedAt": "2025-11-30",
+    "description": "We are seeking a Frontend Engineer to build accessible, performant web experiences using React. Responsibilities include developing UI components, collaborating with designers, and improving the DX."
+  },
+  {
+    "id": "2",
+    "title": "Backend Engineer",
+    "company": "AmberTech",
+    "location": "New York, NY",
+    "type": "Contract",
+    "tags": ["Node.js", "API", "PostgreSQL"],
+    "postedAt": "2025-11-28",
+    "description": "Design and implement APIs and services. Experience with Node.js, SQL databases, and cloud deployments preferred."
+  },
+  {
+    "id": "3",
+    "title": "Full Stack Developer",
+    "company": "Oceanic Systems",
+    "location": "San Francisco, CA",
+    "type": "Full-time",
+    "tags": ["React", "Node.js", "TypeScript"],
+    "postedAt": "2025-11-25",
+    "description": "Work across the stack to deliver modern product features. Strong understanding of frontend and backend best practices."
+  },
+  {
+    "id": "4",
+    "title": "Data Engineer",
+    "company": "Harbor Analytics",
+    "location": "Remote",
+    "type": "Part-time",
+    "tags": ["Python", "ETL", "AWS"],
+    "postedAt": "2025-11-20",
+    "description": "Build and maintain data pipelines, ensure data quality, and support analytics initiatives."
+  },
+  {
+    "id": "5",
+    "title": "UX Designer",
+    "company": "Sail Design Co",
+    "location": "Austin, TX",
+    "type": "Full-time",
+    "tags": ["Figma", "User Research", "Accessibility"],
+    "postedAt": "2025-11-18",
+    "description": "Create elegant user experiences informed by research. Collaborate with engineers to deliver accessible designs."
+  },
+  {
+    "id": "6",
+    "title": "DevOps Engineer",
+    "company": "Cloud Harbor",
+    "location": "Remote",
+    "type": "Full-time",
+    "tags": ["Kubernetes", "CI/CD", "Terraform"],
+    "postedAt": "2025-11-15",
+    "description": "Own and improve infrastructure and deployment pipelines, with a focus on reliability and automation."
+  }
+]

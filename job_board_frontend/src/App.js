@@ -1,47 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
+import JobList from './pages/JobList';
+import JobDetails from './pages/JobDetails';
 
 // PUBLIC_INTERFACE
 function App() {
-  const [theme, setTheme] = useState('light');
-
-  // Effect to apply theme to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
-
+  /** App root: header + routes */
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className="app-shell">
+      <header className="header" role="banner">
+        <div className="header-wrap">
+          <div className="brand">
+            <div className="brand-badge" aria-hidden>JB</div>
+            <div>
+              <div className="brand-title">Job Browser</div>
+              <div className="brand-sub">Ocean Professional</div>
+            </div>
+          </div>
+          <div style={{ marginLeft: 'auto' }}>
+            <Link className="link" to="/" aria-label="Go to job list">Jobs</Link>
+          </div>
+        </div>
       </header>
+
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<JobList />} />
+          <Route path="/jobs/:id" element={<JobDetails />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
