@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { fetchJobs } from '../api';
-import { getApplication } from '../utils/applications';
+import { getApplication, markApplicationJobDeleted } from '../utils/applications';
 import { isJobSaved, toggleSavedJob } from '../utils/savedJobs';
+import { isUserOwnedJob, togglePauseJob, deleteUserJob } from '../utils/userJobs';
 
 /**
  * Format a salary range using Ocean Professional themed concise style.
@@ -130,6 +131,30 @@ export default function JobDetails() {
   const saveTitle = saved ? 'Unsave job' : 'Save job';
   const saveIcon = saved ? '🔖' : '📑';
 
+  const owner = isUserOwnedJob(String(id));
+  const paused = !!job.paused;
+
+  function onPauseToggle() {
+    const next = togglePauseJob(String(id));
+    if (next) {
+      // if paused now, keep details visible but show badge
+      // trigger reload via event listened by lists; local state already updated in job variable only on next fetch
+      // we can just navigate to same route to refresh state from api fetch if needed
+      navigate(0);
+    }
+  }
+
+  function onDelete() {
+    const ok = window.confirm('Delete this job? This cannot be undone.');
+    if (!ok) return;
+    const removed = deleteUserJob(String(id));
+    if (removed) {
+      try { markApplicationJobDeleted(String(id)); } catch {}
+      // If saved, Saved page will get event from saved toggle elsewhere. We leave saved state as-is; user can clean up from Saved page.
+      navigate('/', { replace: true });
+    }
+  }
+
   return (
     <div className="main">
       <div className="detail" role="region" aria-label="Job details">
@@ -140,6 +165,11 @@ export default function JobDetails() {
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             {appliedInfo ? (
               <span className="meta" style={{ color: '#1d4ed8', fontWeight: 600 }}>{appliedInfo}</span>
+            ) : null}
+            {paused ? (
+              <span className="badge" title="Paused" aria-label="Job is paused" style={{ background: 'rgba(245,158,11,.08)', borderColor: 'rgba(245,158,11,.25)', color: '#b45309' }}>
+                Paused
+              </span>
             ) : null}
             <button
               className="page-btn"
@@ -158,11 +188,28 @@ export default function JobDetails() {
             >
               {saveIcon}
             </button>
-            <button className="button" onClick={onApply} aria-label="Apply to this job">
+            <button className="button" onClick={onApply} aria-label="Apply to this job" disabled={paused && !owner}>
               {appliedInfo ? 'Update application' : 'Apply'}
             </button>
+            {owner && (
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                <a className="page-btn" href={`/jobs/${encodeURIComponent(id)}/edit`} aria-label="Edit job">Edit</a>
+                <button className="page-btn" onClick={onPauseToggle} aria-label={paused ? 'Unpause job' : 'Pause job'}>
+                  {paused ? 'Unpause' : 'Pause'}
+                </button>
+                <button className="page-btn" onClick={onDelete} aria-label="Delete job" style={{ borderColor: 'var(--color-error)', color: 'var(--color-error)' }}>
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
         </div>
+
+        {paused ? (
+          <div className="meta" role="status" style={{ marginTop: 8, color: '#b45309' }}>
+            This job is paused and hidden from browsing and saved pages. Owners can still view and edit it.
+          </div>
+        ) : null}
 
         <div className="separator" />
 

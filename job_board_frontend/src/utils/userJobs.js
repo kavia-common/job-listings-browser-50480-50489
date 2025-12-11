@@ -39,17 +39,13 @@ export function saveUserJobs(jobs) {
 export function addUserJob(job) {
   const list = loadUserJobs();
   const withId = {
+    paused: false, // default new jobs not paused
     ...job,
     id: job?.id != null && job.id !== '' ? String(job.id) : generateJobId(),
   };
   list.push(withId);
   saveUserJobs(list);
-  // Fire a simple event to allow pages to refresh if needed
-  try {
-    window.dispatchEvent(new CustomEvent('userjobs:change', { detail: { id: withId.id, action: 'add' } }));
-  } catch {
-    // ignore
-  }
+  dispatchUserJobsEvent(withId.id, 'add', withId);
   return withId;
 }
 
@@ -62,7 +58,64 @@ export function findUserJobById(id) {
   return list.find((j) => String(j.id) === String(id)) || null;
 }
 
+/**
+ * PUBLIC_INTERFACE
+ * Update an existing user job by id. Returns updated job or null.
+ */
+export function updateUserJob(id, partial) {
+  const list = loadUserJobs();
+  const idx = list.findIndex((j) => String(j.id) === String(id));
+  if (idx === -1) return null;
+  const updated = { ...list[idx], ...(partial || {}) };
+  list[idx] = updated;
+  saveUserJobs(list);
+  dispatchUserJobsEvent(String(id), 'update', updated);
+  return updated;
+}
+
+/**
+ * PUBLIC_INTERFACE
+ * Delete a user job by id. Returns true if removed.
+ */
+export function deleteUserJob(id) {
+  const list = loadUserJobs();
+  const next = list.filter((j) => String(j.id) !== String(id));
+  const removed = next.length !== list.length;
+  if (removed) {
+    saveUserJobs(next);
+    dispatchUserJobsEvent(String(id), 'delete', null);
+  }
+  return removed;
+}
+
+/**
+ * PUBLIC_INTERFACE
+ * Check if a job belongs to the current user's local jobs.
+ */
+export function isUserOwnedJob(id) {
+  return !!findUserJobById(id);
+}
+
+/**
+ * PUBLIC_INTERFACE
+ * Toggle paused flag for a user job.
+ */
+export function togglePauseJob(id, force) {
+  const job = findUserJobById(id);
+  if (!job) return null;
+  const paused = typeof force === 'boolean' ? !!force : !job.paused;
+  return updateUserJob(id, { paused });
+}
+
 function generateJobId() {
   // timestamp-random for uniqueness and URL-friendly
   return String(Date.now()) + '-' + Math.random().toString(36).slice(2, 8);
+}
+
+function dispatchUserJobsEvent(id, action, job) {
+  try {
+    window.dispatchEvent(new CustomEvent('userjobs:change', { detail: { id: String(id), action, job } }));
+  } catch {
+    // ignore
+  }
 }

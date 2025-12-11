@@ -6,6 +6,7 @@ import ApplyPage from './pages/ApplyPage';
 import Profile from './pages/Profile';
 import SavedJobsPage from './pages/SavedJobs';
 import PostJob from './pages/PostJob';
+import EditJob from './pages/EditJob';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route path="/" element={<JobList />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
           <Route path="/jobs/:id/apply" element={<ApplyPage />} />
+          <Route path="/jobs/:id/edit" element={<EditJob />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/saved" element={<SavedJobsPage />} />
           <Route path="/post" element={<PostJob />} />

@@ -99,17 +99,26 @@ export default function JobList() {
   // Load jobs
   useEffect(() => {
     const ctrl = new AbortController();
-    setStatus({ loading: true, error: null, from: null });
-    fetchJobs(ctrl.signal)
-      .then(({ jobs: data, from }) => {
-        setJobs(Array.isArray(data) ? data.map(normalizeJob) : []);
-        setStatus({ loading: false, error: null, from });
-        log('debug', 'Jobs loaded from', from);
-      })
-      .catch((e) => {
-        setStatus({ loading: false, error: e.message, from: null });
-      });
-    return () => ctrl.abort();
+    const load = () => {
+      setStatus({ loading: true, error: null, from: null });
+      fetchJobs(ctrl.signal)
+        .then(({ jobs: data, from }) => {
+          setJobs(Array.isArray(data) ? data.map(normalizeJob) : []);
+          setStatus({ loading: false, error: null, from });
+          log('debug', 'Jobs loaded from', from);
+        })
+        .catch((e) => {
+          setStatus({ loading: false, error: e.message, from: null });
+        });
+    };
+    load();
+    // refresh on user jobs changes (add/update/delete/pause)
+    const onUserJobs = () => load();
+    window.addEventListener('userjobs:change', onUserJobs);
+    return () => {
+      ctrl.abort();
+      window.removeEventListener('userjobs:change', onUserJobs);
+    };
   }, []);
 
   // Build unique options

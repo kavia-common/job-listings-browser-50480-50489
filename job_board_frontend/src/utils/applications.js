@@ -9,7 +9,8 @@ const APPLICATIONS_KEY = 'jb_applications_v1';
  *     email: string,
  *     resume?: { name, size, type, dataUrl },
  *     coverLetter?: string,
- *     submittedAt: number
+ *     submittedAt: number,
+ *     jobDeleted?: boolean   // mark when job removed to preserve history without breaking UI
  *   }
  * }
  */
@@ -65,4 +66,13 @@ export function setApplication(jobId, data) {
   };
   saveApplications(next);
   return next[jobId];
+}
+
+// PUBLIC_INTERFACE
+export function markApplicationJobDeleted(jobId) {
+  /** Mark an application's job as deleted without removing the application record */
+  const apps = loadApplications();
+  if (!apps[jobId]) return false;
+  apps[jobId] = { ...apps[jobId], jobDeleted: true };
+  return saveApplications(apps);
 }

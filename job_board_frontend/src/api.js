@@ -7,6 +7,7 @@ const base = process.env.REACT_APP_API_BASE;
 /**
  * Merge API/mock jobs with user-created jobs from localStorage.
  * Ensures IDs are strings for consistency.
+ * Note: paused user jobs are filtered out from list queries.
  */
 function mergeWithUserJobs(sourceJobs) {
   const core = Array.isArray(sourceJobs) ? sourceJobs : [];
@@ -15,6 +16,7 @@ function mergeWithUserJobs(sourceJobs) {
   const seen = new Set();
   const merged = [];
 
+  // Add core (api/mock) jobs first
   for (const j of core) {
     const id = normId(j.id);
     if (!id) continue;
@@ -23,10 +25,14 @@ function mergeWithUserJobs(sourceJobs) {
       merged.push({ ...j, id });
     }
   }
+
+  // Add user jobs that are not paused (for list fetching)
   for (const j of user) {
     const id = normId(j.id);
     if (!id) continue;
     if (!seen.has(id)) {
+      // hide paused jobs from list queries
+      if (j.paused) continue;
       seen.add(id);
       merged.push({ ...j, id });
     }
@@ -65,12 +71,50 @@ export async function fetchJobs(signal) {
   return { jobs: merged, from: 'mock' };
 }
 
+/**
+ * INTERNAL: get raw merged jobs including paused user jobs (for direct navigation/ownership cases).
+ */
+async function fetchJobsIncludingPaused(signal) {
+  const endpoint = base ? `${base.replace(/\/$/, '')}/jobs` : null;
+  let baseArr = Array.isArray(mockData) ? mockData : [];
+  if (endpoint) {
+    try {
+      const res = await fetch(endpoint, { signal, headers: { Accept: 'application/json' } });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) baseArr = data;
+      }
+    } catch {
+      // ignore, fallback to mock
+    }
+  }
+  const core = Array.isArray(baseArr) ? baseArr : [];
+  const user = loadUserJobs();
+  const normId = (id) => (id != null ? String(id) : '');
+  const seen = new Set();
+  const merged = [];
+  for (const j of core) {
+    const id = normId(j.id);
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    merged.push({ ...j, id });
+  }
+  for (const j of user) {
+    const id = normId(j.id);
+    if (!id || seen.has(id)) continue;
+    // IMPORTANT: here we include paused as well for direct lookup
+    seen.add(id);
+    merged.push({ ...j, id });
+  }
+  return merged;
+}
+
 // PUBLIC_INTERFACE
 export async function getJobById(id, signal) {
   /**
    * Get a single job by id using the same pipeline as fetchJobs (API/mock + user jobs).
-   * Falls back to scanning mock + user jobs if API is unavailable.
+   * For user jobs, allow retrieving even if paused (for owner navigation to details/edit).
    */
-  const { jobs } = await fetchJobs(signal);
+  const jobs = await fetchJobsIncludingPaused(signal);
   return jobs.find((j) => String(j.id) === String(id)) || null;
 }
