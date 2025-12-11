@@ -166,6 +166,16 @@ export default function JobDetails() {
             {appliedInfo ? (
               <span className="meta" style={{ color: '#1d4ed8', fontWeight: 600 }}>{appliedInfo}</span>
             ) : null}
+            {existingApp ? (
+              <a
+                className="page-btn"
+                href={`/applications?jobId=${encodeURIComponent(id)}`}
+                aria-label="View application record"
+                title="View application record"
+              >
+                View application
+              </a>
+            ) : null}
             {paused ? (
               <span className="badge" title="Paused" aria-label="Job is paused" style={{ background: 'rgba(245,158,11,.08)', borderColor: 'rgba(245,158,11,.25)', color: '#b45309' }}>
                 Paused

@@ -10,6 +10,8 @@ const APPLICATIONS_KEY = 'jb_applications_v1';
  *     resume?: { name, size, type, dataUrl },
  *     coverLetter?: string,
  *     submittedAt: number,
+ *     status?: 'submitted' | 'shortlisted' | 'rejected' | 'hired',
+ *     lastStatusAt?: number,
  *     jobDeleted?: boolean   // mark when job removed to preserve history without breaking UI
  *   }
  * }
@@ -52,17 +54,23 @@ export function getApplication(jobId) {
 export function setApplication(jobId, data) {
   /**
    * Create or update an application for a jobId.
-   * Automatically sets submittedAt timestamp.
+   * Automatically sets submittedAt timestamp for create,
+   * and keeps existing submittedAt when updating unless explicitly overridden.
    */
   const apps = loadApplications();
+  const existing = apps[jobId] || {};
+  const now = Date.now();
+  const nextRecord = {
+    ...existing,
+    ...(data || {}),
+    jobId: String(jobId),
+    submittedAt: existing.submittedAt || now,
+    status: existing.status || 'submitted',
+    lastStatusAt: existing.lastStatusAt || existing.submittedAt || now,
+  };
   const next = {
     ...apps,
-    [jobId]: {
-      ...(apps[jobId] || {}),
-      ...(data || {}),
-      jobId: String(jobId),
-      submittedAt: Date.now(),
-    },
+    [jobId]: nextRecord,
   };
   saveApplications(next);
   return next[jobId];
@@ -75,4 +83,38 @@ export function markApplicationJobDeleted(jobId) {
   if (!apps[jobId]) return false;
   apps[jobId] = { ...apps[jobId], jobDeleted: true };
   return saveApplications(apps);
+}
+
+// PUBLIC_INTERFACE
+export function listAllApplications() {
+  /** Return application array sorted by submittedAt desc */
+  const apps = loadApplications();
+  return Object.values(apps || {}).sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+}
+
+// PUBLIC_INTERFACE
+export function listApplicationsByJob(jobId) {
+  /** Return application for a specific jobId as single-element array if exists (current model supports one per job) */
+  const app = getApplication(String(jobId));
+  return app ? [app] : [];
+}
+
+// PUBLIC_INTERFACE
+export function updateApplicationStatus(jobId, status) {
+  /** Update application status with timestamp */
+  const apps = loadApplications();
+  if (!apps[jobId]) return false;
+  apps[jobId] = {
+    ...apps[jobId],
+    status,
+    lastStatusAt: Date.now(),
+  };
+  return saveApplications(apps);
+}
+
+// PUBLIC_INTERFACE
+export function getResumeURL(jobId) {
+  /** Return resume dataUrl for the application if available */
+  const app = getApplication(String(jobId));
+  return app?.resume?.dataUrl || '';
 }

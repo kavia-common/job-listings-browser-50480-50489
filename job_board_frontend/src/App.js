@@ -7,6 +7,7 @@ import Profile from './pages/Profile';
 import SavedJobsPage from './pages/SavedJobs';
 import PostJob from './pages/PostJob';
 import EditJob from './pages/EditJob';
+import ApplicationsPage from './pages/ApplicationsPage';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <div style={{ marginLeft: 'auto', display: 'flex', gap: 14 }}>
               <Link className="link" to="/" aria-label="Go to job list">Jobs</Link>
               <Link className="link" to="/saved" aria-label="Go to saved jobs" title="Saved jobs">Saved</Link>
+              <Link className="link" to="/applications" aria-label="Go to applications" title="Applications">Applications</Link>
               <Link className="link" to="/profile" aria-label="Go to profile">Profile</Link>
               <Link className="link" to="/post" aria-label="Post a job" title="Post a job">Post Job</Link>
             </div>
@@ -39,6 +41,7 @@ function App() {
           <Route path="/jobs/:id/edit" element={<EditJob />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/saved" element={<SavedJobsPage />} />
+          <Route path="/applications" element={<ApplicationsPage />} />
           <Route path="/post" element={<PostJob />} />
         </Routes>
       </div>
