@@ -5,6 +5,7 @@ import JobDetails from './pages/JobDetails';
 import ApplyPage from './pages/ApplyPage';
 import Profile from './pages/Profile';
 import SavedJobsPage from './pages/SavedJobs';
+import PostJob from './pages/PostJob';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -25,6 +26,7 @@ function App() {
               <Link className="link" to="/" aria-label="Go to job list">Jobs</Link>
               <Link className="link" to="/saved" aria-label="Go to saved jobs" title="Saved jobs">Saved</Link>
               <Link className="link" to="/profile" aria-label="Go to profile">Profile</Link>
+              <Link className="link" to="/post" aria-label="Post a job" title="Post a job">Post Job</Link>
             </div>
           </div>
         </header>
@@ -35,6 +37,7 @@ function App() {
           <Route path="/jobs/:id/apply" element={<ApplyPage />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/saved" element={<SavedJobsPage />} />
+          <Route path="/post" element={<PostJob />} />
         </Routes>
       </div>
     </BrowserRouter>

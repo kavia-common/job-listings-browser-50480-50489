@@ -6,4 +6,6 @@ test('renders header brand', () => {
   expect(screen.getByText(/Job Browser/i)).toBeInTheDocument();
   // Ensure Saved link exists
   expect(screen.getByRole('link', { name: /saved jobs/i })).toBeInTheDocument();
+  // Ensure Post Job link exists
+  expect(screen.getByRole('link', { name: /post a job/i })).toBeInTheDocument();
 });
