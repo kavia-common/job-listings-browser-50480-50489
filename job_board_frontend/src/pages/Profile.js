@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { loadProfile, saveProfile, getDefaultProfile } from '../utils/storage';
+import { loadApplications } from '../utils/applications';
 import { log } from '../theme';
 
 // PUBLIC_INTERFACE
@@ -54,6 +55,7 @@ export default function Profile() {
             onChange={(v) => setProfile({ ...profile, education: v })}
           />
         )}
+        {tab === 'applications' && <ApplicationsSection />}
       </div>
     </div>
   );
@@ -66,6 +68,7 @@ function TabBar({ current, onChange }) {
     { id: 'skills', label: 'Skills' },
     { id: 'experience', label: 'Experience' },
     { id: 'education', label: 'Education' },
+    { id: 'applications', label: 'Applications' },
   ];
   return (
     <nav aria-label="Profile sections" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -525,4 +528,66 @@ function formatBytes(bytes) {
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`;
+}
+
+function ApplicationsSection() {
+  const [apps, setApps] = useState({});
+
+  useEffect(() => {
+    try {
+      setApps(loadApplications());
+    } catch {
+      setApps({});
+    }
+  }, []);
+
+  const entries = Object.values(apps || {}).sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+
+  return (
+    <Section title="Applications">
+      {entries.length === 0 ? (
+        <div className="meta">You haven't applied to any jobs yet. Apply from a job's details page.</div>
+      ) : (
+        <div style={{ display: 'grid', gap: 10 }}>
+          {entries.map((a) => (
+            <div key={`${a.jobId}-${a.submittedAt}`} className="card" style={{ padding: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: 8 }}>
+                <div>
+                  <div style={{ fontWeight: 700 }}>Job #{a.jobId}</div>
+                  <div className="meta">
+                    Submitted: {new Date(a.submittedAt).toLocaleString()} • {a.fullName} • {a.email}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <a className="page-btn" href={`/jobs/${encodeURIComponent(a.jobId)}`} aria-label="View job">Open job</a>
+                  <a className="button" href={`/jobs/${encodeURIComponent(a.jobId)}/apply`} aria-label="Update application">Update</a>
+                </div>
+              </div>
+              {a.resume ? (
+                <>
+                  <div className="separator" />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                    <div>
+                      <div style={{ fontWeight: 600 }}>Resume: {a.resume.name}</div>
+                      <div className="meta">{formatBytes(a.resume.size)} • {a.resume.type}</div>
+                    </div>
+                    <a className="link" href={a.resume.dataUrl} download={a.resume.name}>Download</a>
+                  </div>
+                </>
+              ) : null}
+              {a.coverLetter ? (
+                <>
+                  <div className="separator" />
+                  <div>
+                    <div style={{ fontWeight: 600, marginBottom: 4 }}>Cover letter</div>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{a.coverLetter}</div>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
 }

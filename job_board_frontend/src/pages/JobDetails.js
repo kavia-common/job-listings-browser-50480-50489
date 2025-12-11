@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { fetchJobs } from '../api';
+import { getApplication } from '../utils/applications';
 
 /**
  * Format a salary range using Ocean Professional themed concise style.
@@ -98,26 +99,32 @@ export default function JobDetails() {
     : job.salary?.max ?? undefined;
 
   const applyUrl = job.applyUrl || job.applyURL || job.url || '';
+  const existingApp = getApplication(String(id));
+  const appliedInfo = existingApp ? `Applied ${new Date(existingApp.submittedAt).toLocaleString()}` : '';
 
   function onApply() {
     if (applyUrl && /^https?:\/\//i.test(String(applyUrl))) {
       window.open(applyUrl, '_blank', 'noopener,noreferrer');
     } else {
-      // Open themed placeholder modal
-      setShowApply(true);
+      navigate(`/jobs/${encodeURIComponent(id)}/apply`);
     }
   }
 
   return (
     <div className="main">
       <div className="detail" role="region" aria-label="Job details">
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
           <button className="button secondary" onClick={() => navigate(-1)} aria-label="Go back">
             ← Back
           </button>
-          <button className="button" onClick={onApply} aria-label="Apply to this job">
-            Apply
-          </button>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            {appliedInfo ? (
+              <span className="meta" style={{ color: '#1d4ed8', fontWeight: 600 }}>{appliedInfo}</span>
+            ) : null}
+            <button className="button" onClick={onApply} aria-label="Apply to this job">
+              {appliedInfo ? 'Update application' : 'Apply'}
+            </button>
+          </div>
         </div>
 
         <div className="separator" />
@@ -177,53 +184,7 @@ export default function JobDetails() {
           ))}
         </div>
 
-        {/* Simple themed modal for Apply placeholder */}
-        {showApply && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Apply dialog"
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(17,24,39,0.35)',
-              display: 'grid',
-              placeItems: 'center',
-              padding: 16,
-              zIndex: 50,
-            }}
-            onClick={() => setShowApply(false)}
-          >
-            <div
-              className="detail"
-              style={{
-                maxWidth: 520,
-                width: '100%',
-                boxShadow: 'var(--shadow-md)',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2 style={{ marginTop: 0 }}>Apply to {company}</h2>
-              <div className="meta" style={{ marginBottom: 10 }}>
-                This is a placeholder action. Provide an external apply URL in the job data (applyUrl) to open it directly.
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'end', gap: 8 }}>
-                <button className="page-btn" onClick={() => setShowApply(false)}>Close</button>
-                {applyUrl ? (
-                  <a
-                    className="button"
-                    href={applyUrl}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    aria-label="Open external apply link"
-                  >
-                    Open link
-                  </a>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        )}
+
       </div>
     </div>
   );

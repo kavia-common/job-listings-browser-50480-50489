@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import JobList from './pages/JobList';
 import JobDetails from './pages/JobDetails';
+import ApplyPage from './pages/ApplyPage';
 import Profile from './pages/Profile';
 
 // PUBLIC_INTERFACE
@@ -29,6 +30,7 @@ function App() {
         <Routes>
           <Route path="/" element={<JobList />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
+          <Route path="/jobs/:id/apply" element={<ApplyPage />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
