@@ -63,20 +63,24 @@ export default function JobList() {
 
   if (status.loading) {
     return (
-      <div role="status" aria-live="polite" className="detail">
-        <strong>Loading jobs…</strong>
-        <div className="meta">Please wait while we fetch listings.</div>
+      <div className="main">
+        <div role="status" aria-live="polite" className="detail">
+          <strong>Loading jobs…</strong>
+          <div className="meta">Please wait while we fetch listings.</div>
+        </div>
       </div>
     );
   }
 
   if (status.error) {
     return (
-      <div role="alert" className="detail" aria-live="assertive">
-        <strong>Failed to load jobs</strong>
-        <div className="meta">{status.error}</div>
-        <div className="separator" />
-        <div className="meta">Using local mock data if available.</div>
+      <div className="main">
+        <div role="alert" className="detail" aria-live="assertive">
+          <strong>Failed to load jobs</strong>
+          <div className="meta">{status.error}</div>
+          <div className="separator" />
+          <div className="meta">Using local mock data if available.</div>
+        </div>
       </div>
     );
   }
@@ -129,7 +133,12 @@ export default function JobList() {
       </section>
 
       <div className="main" role="region" aria-label="Job results">
-        {filtered.length === 0 ? (
+        {jobs.length === 0 ? (
+          <div className="detail">
+            <strong>No jobs available.</strong>
+            <div className="meta">There are currently no job listings to display. If you expected data from an API, ensure REACT_APP_API_BASE is configured. Otherwise mock data should load by default.</div>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="detail">
             <strong>No jobs match your filters.</strong>
             <div className="meta">Try adjusting your search or filters.</div>
