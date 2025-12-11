@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addUserJob } from '../utils/userJobs';
+import { getTeam } from '../utils/team';
 
 // Helpers for minimal inline validation errors rendering
 function Field({ id, label, required, children, error, hint }) {
@@ -19,9 +20,7 @@ function Field({ id, label, required, children, error, hint }) {
 // PUBLIC_INTERFACE
 export default function PostJob() {
   /** Post Job page: create a new job listing stored in localStorage (userJobs)
-   * Fields: title (req), company, location (req), category, experience level, type,
-   * description (req, multiline), tags/skills (chips), salaryMin, salaryMax, optional applyUrl.
-   * Validates required fields and salaryMin <= salaryMax. On success, shows success message and redirects to details page.
+   * When a Team exists, the created job will be team-owned automatically.
    */
   const navigate = useNavigate();
 
@@ -40,6 +39,8 @@ export default function PostJob() {
 
   const [status, setStatus] = useState({ error: '', success: '' });
   const [submitting, setSubmitting] = useState(false);
+
+  const team = getTeam();
 
   const canSubmit = useMemo(() => {
     if (!title.trim() || !location.trim() || !description.trim()) return false;
@@ -130,6 +131,12 @@ export default function PostJob() {
           <h1 style={{ margin: 0 }}>Post a Job</h1>
           <button className="button secondary" type="button" onClick={() => navigate(-1)} aria-label="Go back">← Back</button>
         </div>
+
+        {team ? (
+          <div className="meta" style={{ marginTop: 8, padding: '8px 10px', borderRadius: 8, background: 'rgba(37,99,235,.08)', border: '1px solid rgba(37,99,235,.25)', color: '#1d4ed8', fontWeight: 700 }}>
+            This job will be managed by your team.
+          </div>
+        ) : null}
 
         <div className="separator" />
 

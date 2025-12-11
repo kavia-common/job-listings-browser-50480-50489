@@ -348,3 +348,8 @@ body {
   cursor: pointer;
   border: none;
 }
+
+/* Member switcher tweaks */
+.member-switcher select {
+  height: 32px;
+}

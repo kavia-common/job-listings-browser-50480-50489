@@ -1,3 +1,5 @@
+import { assignJobToTeam, getTeam } from './team';
+
 const USER_JOBS_KEY = 'userJobs';
 
 /**
@@ -34,14 +36,18 @@ export function saveUserJobs(jobs) {
 /**
  * PUBLIC_INTERFACE
  * Add a new user job. Returns the created job.
- * Assigns an ID if missing.
+ * Assigns an ID if missing and attaches teamId if a team exists.
  */
 export function addUserJob(job) {
   const list = loadUserJobs();
+  const teamId = assignJobToTeam(job?.id);
   const withId = {
     paused: false, // default new jobs not paused
     ...job,
     id: job?.id != null && job.id !== '' ? String(job.id) : generateJobId(),
+    ...(teamId ? { teamId } : {}),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
   };
   list.push(withId);
   saveUserJobs(list);
@@ -61,12 +67,19 @@ export function findUserJobById(id) {
 /**
  * PUBLIC_INTERFACE
  * Update an existing user job by id. Returns updated job or null.
+ * Preserves teamId unless explicitly overridden.
  */
 export function updateUserJob(id, partial) {
   const list = loadUserJobs();
   const idx = list.findIndex((j) => String(j.id) === String(id));
   if (idx === -1) return null;
-  const updated = { ...list[idx], ...(partial || {}) };
+  const original = list[idx];
+  const updated = {
+    ...original,
+    ...(partial || {}),
+    teamId: partial && Object.prototype.hasOwnProperty.call(partial, 'teamId') ? partial.teamId : original.teamId,
+    updatedAt: Date.now(),
+  };
   list[idx] = updated;
   saveUserJobs(list);
   dispatchUserJobsEvent(String(id), 'update', updated);
@@ -76,9 +89,20 @@ export function updateUserJob(id, partial) {
 /**
  * PUBLIC_INTERFACE
  * Delete a user job by id. Returns true if removed.
+ * Honors team ownership: only delete if job is not team-owned or current team matches.
  */
 export function deleteUserJob(id) {
   const list = loadUserJobs();
+  const job = list.find((j) => String(j.id) === String(id));
+  if (!job) return false;
+
+  if (job.teamId) {
+    const team = getTeam();
+    if (!team || team.id !== job.teamId) {
+      return false;
+    }
+  }
+
   const next = list.filter((j) => String(j.id) !== String(id));
   const removed = next.length !== list.length;
   if (removed) {
@@ -98,13 +122,27 @@ export function isUserOwnedJob(id) {
 
 /**
  * PUBLIC_INTERFACE
- * Toggle paused flag for a user job.
+ * Toggle paused flag for a user job. Honors team ownership.
  */
 export function togglePauseJob(id, force) {
-  const job = findUserJobById(id);
-  if (!job) return null;
+  const list = loadUserJobs();
+  const idx = list.findIndex((j) => String(j.id) === String(id));
+  if (idx === -1) return null;
+  const job = list[idx];
+
+  if (job.teamId) {
+    const team = getTeam();
+    if (!team || team.id !== job.teamId) {
+      return null;
+    }
+  }
+
   const paused = typeof force === 'boolean' ? !!force : !job.paused;
-  return updateUserJob(id, { paused });
+  const updated = { ...job, paused, updatedAt: Date.now() };
+  list[idx] = updated;
+  saveUserJobs(list);
+  dispatchUserJobsEvent(String(id), 'update', updated);
+  return updated;
 }
 
 function generateJobId() {

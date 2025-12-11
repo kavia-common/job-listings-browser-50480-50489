@@ -5,6 +5,7 @@ import { getApplication, markApplicationJobDeleted } from '../utils/applications
 import { isJobSaved, toggleSavedJob } from '../utils/savedJobs';
 import { isUserOwnedJob, togglePauseJob, deleteUserJob } from '../utils/userJobs';
 import { listCompanyReviews, computeAverages, normalizeCompanyKey } from '../utils/reviews';
+import { getActiveMember, getTeam } from '../utils/team';
 
 /**
  * Format a salary range using Ocean Professional themed concise style.
@@ -24,10 +25,7 @@ function formatSalary(min, max) {
 export default function JobDetails() {
   /**
    * Displays details for a single job by id.
-   * - Uses the same data source as list (api.js) and falls back to mockJobs.json.
-   * - Gracefully handles missing fields.
-   * - Shows company/location/type, tags, salary range, and an Apply action.
-   * - Adds Save/Unsave toggle persisted to localStorage (savedJobs).
+   * Adds Save/Unsave toggle and owner/team management actions.
    */
   const { id } = useParams();
   const navigate = useNavigate();
@@ -132,15 +130,18 @@ export default function JobDetails() {
   const saveTitle = saved ? 'Unsave job' : 'Save job';
   const saveIcon = saved ? '🔖' : '📑';
 
-  const owner = isUserOwnedJob(String(id));
+  const userOwns = isUserOwnedJob(String(id));
   const paused = !!job.paused;
+
+  // Team-owned check
+  const team = getTeam();
+  const teamOwned = team && job.teamId && job.teamId === team.id;
+  const activeMember = getActiveMember();
+  const canManage = teamOwned ? Boolean(activeMember) : userOwns;
 
   function onPauseToggle() {
     const next = togglePauseJob(String(id));
     if (next) {
-      // if paused now, keep details visible but show badge
-      // trigger reload via event listened by lists; local state already updated in job variable only on next fetch
-      // we can just navigate to same route to refresh state from api fetch if needed
       navigate(0);
     }
   }
@@ -151,7 +152,6 @@ export default function JobDetails() {
     const removed = deleteUserJob(String(id));
     if (removed) {
       try { markApplicationJobDeleted(String(id)); } catch {}
-      // If saved, Saved page will get event from saved toggle elsewhere. We leave saved state as-is; user can clean up from Saved page.
       navigate('/', { replace: true });
     }
   }
@@ -167,19 +167,14 @@ export default function JobDetails() {
             {appliedInfo ? (
               <span className="meta" style={{ color: '#1d4ed8', fontWeight: 600 }}>{appliedInfo}</span>
             ) : null}
-            {existingApp ? (
-              <a
-                className="page-btn"
-                href={`/applications?jobId=${encodeURIComponent(id)}`}
-                aria-label="View application record"
-                title="View application record"
-              >
-                View application
-              </a>
-            ) : null}
             {paused ? (
               <span className="badge" title="Paused" aria-label="Job is paused" style={{ background: 'rgba(245,158,11,.08)', borderColor: 'rgba(245,158,11,.25)', color: '#b45309' }}>
                 Paused
+              </span>
+            ) : null}
+            {teamOwned ? (
+              <span className="badge" title="Team-owned" aria-label="Team-owned" style={{ background: 'rgba(37,99,235,.08)', borderColor: 'rgba(37,99,235,.25)', color: '#1d4ed8', fontWeight: 700 }}>
+                Team-owned
               </span>
             ) : null}
             <button
@@ -199,10 +194,10 @@ export default function JobDetails() {
             >
               {saveIcon}
             </button>
-            <button className="button" onClick={onApply} aria-label="Apply to this job" disabled={paused && !owner}>
+            <button className="button" onClick={onApply} aria-label="Apply to this job" disabled={paused && !canManage}>
               {appliedInfo ? 'Update application' : 'Apply'}
             </button>
-            {owner && (
+            {canManage && (
               <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                 <a className="page-btn" href={`/jobs/${encodeURIComponent(id)}/edit`} aria-label="Edit job">Edit</a>
                 <button className="page-btn" onClick={onPauseToggle} aria-label={paused ? 'Unpause job' : 'Pause job'}>
@@ -216,17 +211,10 @@ export default function JobDetails() {
           </div>
         </div>
 
-        {paused ? (
-          <div className="meta" role="status" style={{ marginTop: 8, color: '#b45309' }}>
-            This job is paused and hidden from browsing and saved pages. Owners can still view and edit it.
-          </div>
-        ) : null}
-
         <div className="separator" />
 
-        {/* Company header block (name/logo/location) */}
+        {/* Company header block */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          {/* Simple logo placeholder with initials; if a logoUrl existed we could use it */}
           <div
             aria-hidden
             style={{
@@ -250,9 +238,8 @@ export default function JobDetails() {
           </div>
         </div>
 
-        <h1>{title}</h1>
+        <h1 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>{title}</h1>
 
-        {/* Company review summary */}
         <CompanyReviewSummary companyName={company} />
 
         <div className="info" aria-label="Job summary">
