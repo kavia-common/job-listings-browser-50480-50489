@@ -4,6 +4,7 @@ import { fetchJobs } from '../api';
 import { getApplication, markApplicationJobDeleted } from '../utils/applications';
 import { isJobSaved, toggleSavedJob } from '../utils/savedJobs';
 import { isUserOwnedJob, togglePauseJob, deleteUserJob } from '../utils/userJobs';
+import { listCompanyReviews, computeAverages, normalizeCompanyKey } from '../utils/reviews';
 
 /**
  * Format a salary range using Ocean Professional themed concise style.
@@ -251,6 +252,9 @@ export default function JobDetails() {
 
         <h1>{title}</h1>
 
+        {/* Company review summary */}
+        <CompanyReviewSummary companyName={company} />
+
         <div className="info" aria-label="Job summary">
           <span>{company}</span>
           <span>•</span>
@@ -277,6 +281,74 @@ export default function JobDetails() {
             <p key={i}>{p}</p>
           ))}
         </div>
+
+        <div className="separator" />
+        <ReviewsPreview companyName={company} />
+      </div>
+    </div>
+  );
+}
+
+function ReviewsPreview({ companyName }) {
+  const key = normalizeCompanyKey(companyName);
+  const reviews = listCompanyReviews(key).slice(0, 2);
+  if (reviews.length === 0) {
+    return (
+      <div>
+        <div className="meta">No reviews for this company yet.</div>
+        <div style={{ marginTop: 8 }}>
+          <a className="link" href={`/companies/${encodeURIComponent(key)}/reviews`}>Write the first review →</a>
+        </div>
+      </div>
+    );
+  }
+  const stats = computeAverages(reviews);
+  return (
+    <section aria-label="Recent company reviews" className="card" style={{ padding: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+        <strong>Company reviews</strong>
+        <a className="page-btn" href={`/companies/${encodeURIComponent(key)}/reviews`} aria-label="Read all reviews">
+          Read all reviews →
+        </a>
+      </div>
+      <div className="separator" />
+      <div className="meta" style={{ marginBottom: 8 }}>
+        Overall {stats.overall || 0}/5 • {listCompanyReviews(key).length} total
+      </div>
+      <div style={{ display: 'grid', gap: 8 }}>
+        {reviews.map((r) => (
+          <div key={r.id} className="card" style={{ padding: 10 }}>
+            <div style={{ fontWeight: 700 }}>{r.title}</div>
+            <div className="meta" style={{ marginTop: 2 }}>
+              {r.author?.name || 'Anonymous'} • {r.createdAt ? new Date(r.createdAt).toLocaleDateString() : ''}
+            </div>
+            <div className="separator" />
+            <div style={{ color: '#111827' }}>
+              {r.body.length > 180 ? r.body.slice(0, 180) + '…' : r.body}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CompanyReviewSummary({ companyName }) {
+  const key = normalizeCompanyKey(companyName);
+  const list = listCompanyReviews(key);
+  const stats = computeAverages(list);
+  return (
+    <div className="card" style={{ padding: 10, marginTop: 8 }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+        <span className="badge" title="Overall rating" style={{ background: 'rgba(37,99,235,.08)', borderColor: 'rgba(37,99,235,.25)', color: '#1d4ed8', fontWeight: 700 }}>
+          Overall {stats.overall || 0}/5
+        </span>
+        <span className="badge" title="Culture">Culture {stats.culture || 0}</span>
+        <span className="badge" title="Salary">Salary {stats.salary || 0}</span>
+        <span className="badge" title="Work-life">Work-life {stats.workLife || 0}</span>
+        <a className="link" href={`/companies/${encodeURIComponent(key)}/reviews`} style={{ marginLeft: 'auto' }}>
+          Read all reviews →
+        </a>
       </div>
     </div>
   );

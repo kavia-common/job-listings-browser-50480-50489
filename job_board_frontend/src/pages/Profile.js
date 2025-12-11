@@ -1,9 +1,61 @@
 import { useEffect, useMemo, useState } from 'react';
+
 import { Link } from 'react-router-dom';
 import { loadProfile, saveProfile, getDefaultProfile } from '../utils/storage';
 import { loadApplications } from '../utils/applications';
 import { getSkillScores } from '../utils/assessments';
 import { log } from '../theme';
+
+function MyReviewsSection() {
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    let cleanup = null;
+    import('../utils/reviews').then((mod) => {
+      setItems(mod.listMyReviews());
+      const onChange = () => setItems(mod.listMyReviews());
+      window.addEventListener('reviews:change', onChange);
+      cleanup = () => window.removeEventListener('reviews:change', onChange);
+    });
+    return () => {
+      if (cleanup) cleanup();
+    };
+  }, []);
+
+  return (
+    <Section title="My Reviews">
+      {items.length === 0 ? (
+        <div className="meta">You haven't written any company reviews yet.</div>
+      ) : (
+        <div style={{ display: 'grid', gap: 10 }}>
+          {items.map((r) => (
+            <div key={r.id} className="card" style={{ padding: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: 8 }}>
+                <div>
+                  <div style={{ fontWeight: 700 }}>{r.title}</div>
+                  <div className="meta">{new Date(r.createdAt).toLocaleString()}</div>
+                </div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <a className="page-btn" href={`/companies/${encodeURIComponent(r.companyKey)}/reviews`}>Open company</a>
+                </div>
+              </div>
+              <div className="separator" />
+              <div className="tags">
+                <span className="tag">Culture {r.ratings.culture}</span>
+                <span className="tag">Salary {r.ratings.salary}</span>
+                <span className="tag">Work-life {r.ratings.workLife}</span>
+              </div>
+              <div className="separator" />
+              <div style={{ whiteSpace: 'pre-wrap' }}>
+                {r.body.length > 220 ? r.body.slice(0, 220) + '…' : r.body}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
+}
 
 // PUBLIC_INTERFACE
 export default function Profile() {
@@ -72,6 +124,7 @@ export default function Profile() {
           />
         )}
         {tab === 'applications' && <ApplicationsSection />}
+        {tab === 'myreviews' && <MyReviewsSection />}
         <div className="separator" />
         <div className="meta">
           Looking for new roles? Create <Link className="link" to="/alerts">Job Alerts</Link> to get notified when matches appear.
@@ -123,6 +176,7 @@ function TabBar({ current, onChange }) {
     { id: 'experience', label: 'Experience' },
     { id: 'education', label: 'Education' },
     { id: 'applications', label: 'Applications' },
+    { id: 'myreviews', label: 'My Reviews' },
   ];
   return (
     <nav aria-label="Profile sections" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

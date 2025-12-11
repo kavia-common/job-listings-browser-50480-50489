@@ -5,6 +5,7 @@ import JobList from './pages/JobList';
 import JobDetails from './pages/JobDetails';
 import ApplyPage from './pages/ApplyPage';
 import Profile from './pages/Profile';
+import CompanyReviewsPage from './pages/CompanyReviews';
 import SavedJobsPage from './pages/SavedJobs';
 import PostJob from './pages/PostJob';
 import EditJob from './pages/EditJob';
@@ -68,6 +69,7 @@ function App() {
             <Route path="/assessments" element={<AssessmentsHub />} />
             <Route path="/assessments/results" element={<AssessmentResults />} />
             <Route path="/assessments/:id" element={<AssessmentRouter />} />
+            <Route path="/companies/:companyKey/reviews" element={<CompanyReviewsPage />} />
           </Routes>
         </div>
       </AlertsProvider>
