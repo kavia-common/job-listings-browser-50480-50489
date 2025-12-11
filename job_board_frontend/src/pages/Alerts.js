@@ -10,10 +10,12 @@ import {
   getPushPermissionState,
   requestPushPermission,
 } from '../utils/alerts';
+import { useTranslation } from 'react-i18next';
 
 // PUBLIC_INTERFACE
 export default function AlertsPage() {
   /** Alerts page: create and manage alert rules and view recent notifications */
+  const { t } = useTranslation();
   const nav = useNavigate();
   const loc = useLocation();
   const prefill = useMemo(() => {
@@ -52,7 +54,7 @@ export default function AlertsPage() {
     return r;
   }
   function onDelete(id) {
-    const ok = window.confirm('Delete this alert rule?');
+    const ok = window.confirm(t('actions.delete'));
     if (!ok) return;
     deleteAlert(id);
   }
@@ -60,12 +62,12 @@ export default function AlertsPage() {
   const empty = rules.length === 0;
 
   return (
-    <div className="main" role="region" aria-label="Job Alerts">
+    <div className="main" role="region" aria-label={t('alerts.title')}>
       <div className="detail" style={{ marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-          <h1 style={{ margin: 0 }}>Job Alerts</h1>
+          <h1 style={{ margin: 0 }}>{t('alerts.title')}</h1>
           <div style={{ display: 'flex', gap: 8 }}>
-            <Link className="page-btn" to="/" aria-label="Back to jobs">← Jobs</Link>
+            <Link className="page-btn" to="/" aria-label={t('nav.jobs')}>← {t('nav.jobs')}</Link>
             <button className="button" onClick={() => setEditing({ mode: 'create', values: { ...prefill, keywords: prefill.keywords || prefill.company || '' } })}>
               + New Alert
             </button>
@@ -96,7 +98,7 @@ export default function AlertsPage() {
         <h2 style={{ marginTop: 0, fontSize: '1.1rem' }}>Your Rules</h2>
         <div className="separator" />
         {empty ? (
-          <div className="meta">No alerts yet. Create your first alert using New Alert.</div>
+          <div className="meta">{t('alerts.empty')}</div>
         ) : (
           <div style={{ display: 'grid', gap: 10 }}>
             {rules.map((r) => (

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { listAssessments } from '../utils/assessments';
 import '../App.css';
+import { useTranslation } from 'react-i18next';
 
 function Badge({ children, color = 'primary' }) {
   const colors = {
@@ -19,6 +20,7 @@ function Badge({ children, color = 'primary' }) {
 }
 
 export default function AssessmentsHub() {
+  const { t } = useTranslation();
   const items = useMemo(() => listAssessments(), []);
   const grouped = useMemo(() => {
     const g = {};
@@ -32,12 +34,12 @@ export default function AssessmentsHub() {
   return (
     <div className="container" style={{ padding: 16 }}>
       <div style={{ marginBottom: 16 }}>
-        <h2 style={{ margin: 0 }}>Skill Assessments</h2>
+        <h2 style={{ margin: 0 }}>{t('assessments.title')}</h2>
         <p style={{ color: '#6B7280' }}>Take quick MCQ or coding tests to build your skill score. Results are saved locally.</p>
       </div>
       {items.length === 0 && (
         <div className="card" style={{ padding: 24 }}>
-          <p>No assessments available yet.</p>
+          <p>{t('assessments.noAssessments')}</p>
         </div>
       )}
       <div style={{ display: 'grid', gap: 16 }}>
@@ -64,7 +66,7 @@ export default function AssessmentsHub() {
                       className="btn"
                       style={{ background: '#2563EB', color: 'white', padding: '8px 12px', borderRadius: 8, textDecoration: 'none' }}
                     >
-                      Start
+                      {t('assessments.start')}
                     </Link>
                   </div>
                 </div>
@@ -74,7 +76,7 @@ export default function AssessmentsHub() {
         ))}
       </div>
       <div style={{ marginTop: 16 }}>
-        <Link to="/assessments/results" style={{ color: '#2563EB' }}>View My Results</Link>
+        <Link to="/assessments/results" style={{ color: '#2563EB' }}>{t('assessments.viewResults')}</Link>
       </div>
     </div>
   );

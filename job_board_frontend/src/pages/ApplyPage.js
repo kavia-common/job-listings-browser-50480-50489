@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { fetchJobs } from '../api';
 import { loadProfile, getDefaultProfile } from '../utils/storage';
 import { getApplication, setApplication } from '../utils/applications';
+import { useTranslation } from 'react-i18next';
 
 // Helper: format file size
 function formatBytes(bytes) {
@@ -23,6 +24,7 @@ export default function ApplyPage() {
    * - Prevents duplicate without warning, but shows 'already applied' status and allows updating
    * - Persists to localStorage keyed by jobId under jb_applications_v1
    */
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [jobsState, setJobsState] = useState({ loading: true, error: null, jobs: [] });
@@ -82,7 +84,7 @@ export default function ApplyPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!/^(application\/pdf|image\/)/.test(file.type)) {
-      setStatus({ error: 'Please upload a PDF or image file for resume.', success: '' });
+      setStatus({ error: t('apply.validation.email'), success: '' });
       return;
     }
     const reader = new FileReader();
@@ -95,7 +97,7 @@ export default function ApplyPage() {
       });
       setStatus({ error: '', success: '' });
     };
-    reader.onerror = () => setStatus({ error: 'Failed to read selected file.', success: '' });
+    reader.onerror = () => setStatus({ error: t('app.error'), success: '' });
     reader.readAsDataURL(file);
   }
 
@@ -106,17 +108,17 @@ export default function ApplyPage() {
   function validate() {
     if (!resume && !String(coverLetter || '').trim()) {
       setStatus({
-        error: 'Please attach a resume or write a cover letter to proceed.',
+        error: t('apply.validation.required'),
         success: '',
       });
       return false;
     }
     if (!String(fullName || '').trim()) {
-      setStatus({ error: 'Full name is required.', success: '' });
+      setStatus({ error: t('apply.validation.required'), success: '' });
       return false;
     }
     if (!String(email || '').trim()) {
-      setStatus({ error: 'Email is required.', success: '' });
+      setStatus({ error: t('apply.validation.email'), success: '' });
       return false;
     }
     return true;
@@ -127,7 +129,7 @@ export default function ApplyPage() {
     if (!validate()) return;
     setSubmitting(true);
     try {
-      const saved = setApplication(String(id), {
+      setApplication(String(id), {
         fullName: String(fullName || '').trim(),
         email: String(email || '').trim(),
         resume: resume || undefined,
@@ -136,15 +138,15 @@ export default function ApplyPage() {
       setStatus({
         error: '',
         success: existing
-          ? 'Application updated successfully.'
-          : 'Application submitted successfully.',
+          ? t('apply.submitted')
+          : t('apply.submitted'),
       });
-      // Simple UX: navigate back to job details after short delay
+      // Navigate back to job details after short delay
       setTimeout(() => {
         navigate(`/jobs/${encodeURIComponent(id)}`, { replace: true });
       }, 900);
     } catch (err) {
-      setStatus({ error: 'Failed to save the application locally.', success: '' });
+      setStatus({ error: t('app.error'), success: '' });
     } finally {
       setSubmitting(false);
     }
@@ -153,7 +155,7 @@ export default function ApplyPage() {
   if (jobsState.loading) {
     return (
       <div className="main">
-        <div className="detail" role="status"><strong>Loading…</strong></div>
+        <div className="detail" role="status"><strong>{t('app.loading')}</strong></div>
       </div>
     );
   }
@@ -161,42 +163,42 @@ export default function ApplyPage() {
     return (
       <div className="main">
         <div className="detail" role="alert">
-          <strong>Job not found</strong>
+          <strong>{t('job.noJobs')}</strong>
           <div className="meta">{jobsState.error || 'The job may have been removed.'}</div>
           <div className="separator" />
-          <Link className="button" to="/">← Back to list</Link>
+          <Link className="button" to="/">← {t('nav.jobs')}</Link>
         </div>
       </div>
     );
   }
 
   const appliedInfo = existing
-    ? `You applied on ${new Date(existing.submittedAt).toLocaleString()}`
+    ? t('apply.submitted')
     : null;
 
   return (
     <div className="main">
-      <div className="detail" role="region" aria-label="Apply to job">
+      <div className="detail" role="region" aria-label={t('actions.apply')}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
           <Link className="button secondary" to={`/jobs/${encodeURIComponent(id)}`} aria-label="Back to job">
-            ← Back
+            ← {t('actions.close')}
           </Link>
           <div className="meta">
             {appliedInfo ? (
-              <span style={{ color: '#1d4ed8', fontWeight: 600 }}>{appliedInfo} • You can update your application below.</span>
+              <span style={{ color: '#1d4ed8', fontWeight: 600 }}>{appliedInfo}</span>
             ) : (
-              <span>Apply to this role using your profile details.</span>
+              <span>{t('apply.heading', { title: job.title || '' })}</span>
             )}
           </div>
         </div>
 
         <div className="separator" />
 
-        <h1 style={{ marginTop: 0 }}>{job.title || 'Untitled role'}</h1>
+        <h1 style={{ marginTop: 0 }}>{job.title || t('job.details')}</h1>
         <div className="info">
-          <span>{job.company || 'Company'}</span>
+          <span>{job.company || t('job.company')}</span>
           <span>•</span>
-          <span>{job.location || 'Unspecified'}</span>
+          <span>{job.location || t('job.location')}</span>
           <span>•</span>
           <span>{job.type || 'Unknown'}</span>
         </div>
@@ -205,7 +207,7 @@ export default function ApplyPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
               <label htmlFor="ap-fullName" style={{ display: 'block', marginBottom: 6, fontWeight: 600 }}>
-                Full name
+                {t('apply.name')}
               </label>
               <input
                 id="ap-fullName"
@@ -218,7 +220,7 @@ export default function ApplyPage() {
             </div>
             <div>
               <label htmlFor="ap-email" style={{ display: 'block', marginBottom: 6, fontWeight: 600 }}>
-                Email
+                {t('apply.email')}
               </label>
               <input
                 id="ap-email"
@@ -237,7 +239,7 @@ export default function ApplyPage() {
           <div style={{ display: 'grid', gap: 10 }}>
             <div>
               <label htmlFor="ap-resume" style={{ display: 'block', marginBottom: 6, fontWeight: 600 }}>
-                Resume (PDF or image)
+                {t('apply.resume')}
               </label>
               <input
                 id="ap-resume"
@@ -245,7 +247,7 @@ export default function ApplyPage() {
                 className="input"
                 onChange={onFile}
                 accept="application/pdf,image/*"
-                aria-label="Upload resume"
+                aria-label={t('apply.resume')}
               />
               {resume ? (
                 <div style={{ border: '1px dashed var(--color-border)', borderRadius: 10, padding: 10, marginTop: 8 }}>
@@ -256,7 +258,7 @@ export default function ApplyPage() {
                     </div>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <a className="link" href={resume.dataUrl} download={resume.name} aria-label="Download resume">Download</a>
-                      <button type="button" className="page-btn" onClick={onRemoveResume} aria-label="Remove resume">Remove</button>
+                      <button type="button" className="page-btn" onClick={onRemoveResume} aria-label="Remove resume">{t('actions.delete')}</button>
                     </div>
                   </div>
                   <div className="separator" />
@@ -271,13 +273,13 @@ export default function ApplyPage() {
                   )}
                 </div>
               ) : (
-                <div className="meta">You can also paste a cover letter below if you don't have a resume at hand.</div>
+                <div className="meta">{t('apply.coverLetter')}</div>
               )}
             </div>
 
             <div>
               <label htmlFor="ap-cover" style={{ display: 'block', marginBottom: 6, fontWeight: 600 }}>
-                Cover letter
+                {t('apply.coverLetter')}
               </label>
               <textarea
                 id="ap-cover"
@@ -285,12 +287,9 @@ export default function ApplyPage() {
                 rows={6}
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
-                placeholder="Write a brief cover letter explaining why you're a great fit…"
+                placeholder="Write a brief cover letter…"
                 style={{ height: 'auto', padding: 10, resize: 'vertical' }}
               />
-              <div className="meta" style={{ marginTop: 4 }}>
-                Tip: At least a resume or a cover letter is required.
-              </div>
             </div>
           </div>
 
@@ -306,9 +305,9 @@ export default function ApplyPage() {
           ) : null}
 
           <div style={{ display: 'flex', justifyContent: 'end', gap: 8, marginTop: 12 }}>
-            <Link className="page-btn" to={`/jobs/${encodeURIComponent(id)}`}>Cancel</Link>
-            <button className="button" type="submit" disabled={submitting} aria-label="Submit application">
-              {existing ? 'Update application' : 'Submit application'}
+            <Link className="page-btn" to={`/jobs/${encodeURIComponent(id)}`}>{t('actions.cancel')}</Link>
+            <button className="button" type="submit" disabled={submitting} aria-label={t('apply.submit')}>
+              {t('apply.submit')}
             </button>
           </div>
         </form>

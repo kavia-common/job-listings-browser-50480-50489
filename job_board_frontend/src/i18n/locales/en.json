@@ -1,0 +1,153 @@
+{
+  "app": {
+    "title": "Job Board",
+    "loading": "Loading...",
+    "error": "Something went wrong"
+  },
+  "nav": {
+    "jobs": "Jobs",
+    "saved": "Saved Jobs",
+    "applications": "Applications",
+    "assessments": "Assessments",
+    "alerts": "Alerts",
+    "reviews": "Reviews",
+    "team": "Team",
+    "profile": "Profile",
+    "postJob": "Post Job"
+  },
+  "actions": {
+    "save": "Save",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "apply": "Apply",
+    "manage": "Manage",
+    "pause": "Pause",
+    "unpause": "Unpause",
+    "close": "Close"
+  },
+  "filters": {
+    "searchPlaceholder": "Search jobs, titles, or companies",
+    "location": "Location",
+    "type": "Job Type",
+    "remote": "Remote",
+    "onsite": "Onsite",
+    "hybrid": "Hybrid",
+    "experience": "Experience",
+    "clear": "Clear",
+    "results": "{{count}} result",
+    "results_plural": "{{count}} results"
+  },
+  "pagination": {
+    "prev": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{total}}"
+  },
+  "job": {
+    "details": "Job Details",
+    "description": "Description",
+    "requirements": "Requirements",
+    "company": "Company",
+    "location": "Location",
+    "posted": "Posted",
+    "applyNow": "Apply Now",
+    "manageJob": "Manage Job",
+    "editJob": "Edit Job",
+    "saveJob": "Save Job",
+    "unsaveJob": "Unsave Job",
+    "noJobs": "No jobs found",
+    "similarJobs": "Similar Jobs"
+  },
+  "apply": {
+    "heading": "Apply to {{title}}",
+    "name": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "resume": "Resume",
+    "coverLetter": "Cover Letter",
+    "submit": "Submit Application",
+    "submitted": "Application submitted",
+    "validation": {
+      "required": "This field is required",
+      "email": "Enter a valid email"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "tabs": {
+      "overview": "Overview",
+      "experience": "Experience",
+      "education": "Education",
+      "settings": "Settings"
+    },
+    "fields": {
+      "name": "Name",
+      "headline": "Headline",
+      "summary": "Summary",
+      "location": "Location",
+      "skills": "Skills"
+    }
+  },
+  "saved": {
+    "title": "Saved Jobs",
+    "empty": "You have not saved any jobs yet."
+  },
+  "post": {
+    "title": "Post a Job",
+    "editTitle": "Edit Job",
+    "fields": {
+      "title": "Job Title",
+      "company": "Company",
+      "location": "Location",
+      "type": "Job Type",
+      "description": "Description"
+    }
+  },
+  "applications": {
+    "title": "Applications",
+    "status": {
+      "applied": "Applied",
+      "reviewing": "Reviewing",
+      "interview": "Interview",
+      "offer": "Offer",
+      "rejected": "Rejected"
+    },
+    "empty": "No applications yet."
+  },
+  "assessments": {
+    "title": "Assessments",
+    "start": "Start",
+    "viewResults": "View Results",
+    "noAssessments": "No assessments available."
+  },
+  "alerts": {
+    "title": "Alerts",
+    "empty": "No alerts configured."
+  },
+  "reviews": {
+    "title": "Company Reviews",
+    "empty": "No reviews yet."
+  },
+  "team": {
+    "title": "Team",
+    "empty": "No team members added."
+  },
+  "interviews": {
+    "title": "Interviews",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "scheduledFor": "Scheduled for {{date}}"
+  },
+  "lang": {
+    "label": "Language",
+    "en": "English",
+    "te": "Telugu",
+    "hi": "Hindi",
+    "short": {
+      "en": "EN",
+      "te": "TE",
+      "hi": "HI"
+    }
+  }
+}

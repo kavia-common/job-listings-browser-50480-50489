@@ -43,6 +43,29 @@ Future email/push integration:
 - Email: connect to a backend service (e.g., via REACT_APP_API_BASE) exposing an endpoint to send emails (SendGrid, Mailgun, SES). The frontend should POST alert events to backend; backend handles actual delivery.
 - Push: use a service worker and Web Push (VAPID) with a backend to store subscriptions and send push messages. This demo uses Notification API locally without service workers.
 
+## Internationalization (i18n)
+
+- Library: react-i18next with i18next.
+- Initialization: see src/i18n/index.js (detects from localStorage or browser, persists changes).
+- Supported: English (en), Telugu (te), Hindi (hi)
+- Language selector in header: src/components/LanguageSelector.js
+
+Translations live in:
+- src/i18n/locales/en.json
+- src/i18n/locales/te.json
+- src/i18n/locales/hi.json
+
+RTL scaffold: document dir/lang is updated on language change. Current languages are LTR.
+
+Add a new language:
+1. Create src/i18n/locales/<code>.json mirroring en.json keys.
+2. Add import and resource entry in src/i18n/index.js and include <code> in SUPPORTED_LANGS.
+3. Add labels under lang.<code> and lang.short.<code> keys for the selector.
+
+Usage:
+- In component: const { t } = useTranslation(); then t('nav.jobs'), t('filters.results', { count })
+- Use Intl helpers from src/i18n/index.js for numbers and dates (formatNumber, formatDateTime).
+
 ## Tests
 
-- Minimal unit test included: npm test
+- Minimal tests are language-agnostic by checking roles instead of exact text where possible.

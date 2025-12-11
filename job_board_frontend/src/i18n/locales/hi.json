@@ -1,0 +1,153 @@
+{
+  "app": {
+    "title": "जॉब बोर्ड",
+    "loading": "लोड हो रहा है...",
+    "error": "कुछ त्रुटि हुई"
+  },
+  "nav": {
+    "jobs": "नौकरियां",
+    "saved": "सहेजी गई नौकरियां",
+    "applications": "आवेदन",
+    "assessments": "मूल्यांकन",
+    "alerts": "अलर्ट",
+    "reviews": "रिव्यू",
+    "team": "टीम",
+    "profile": "प्रोफ़ाइल",
+    "postJob": "नौकरी पोस्ट करें"
+  },
+  "actions": {
+    "save": "सेव",
+    "saved": "सेव हो गया",
+    "cancel": "रद्द करें",
+    "delete": "हटाएँ",
+    "edit": "संपादित करें",
+    "apply": "अप्लाई करें",
+    "manage": "मैनेज करें",
+    "pause": "रोकें",
+    "unpause": "जारी करें",
+    "close": "बंद करें"
+  },
+  "filters": {
+    "searchPlaceholder": "नौकरियां, शीर्षक या कंपनी खोजें",
+    "location": "स्थान",
+    "type": "नौकरी का प्रकार",
+    "remote": "रिमोट",
+    "onsite": "ऑनसाइट",
+    "hybrid": "हाइब्रिड",
+    "experience": "अनुभव",
+    "clear": "क्लियर",
+    "results": "{{count}} परिणाम",
+    "results_plural": "{{count}} परिणाम"
+  },
+  "pagination": {
+    "prev": "पिछला",
+    "next": "अगला",
+    "pageOf": "पृष्ठ {{page}} / {{total}}"
+  },
+  "job": {
+    "details": "नौकरी विवरण",
+    "description": "विवरण",
+    "requirements": "आवश्यकताएँ",
+    "company": "कंपनी",
+    "location": "स्थान",
+    "posted": "पोस्ट की तारीख",
+    "applyNow": "अभी अप्लाई करें",
+    "manageJob": "नौकरी मैनेज करें",
+    "editJob": "नौकरी संपादित करें",
+    "saveJob": "नौकरी सेव करें",
+    "unsaveJob": "सेव हटाएँ",
+    "noJobs": "कोई नौकरियां नहीं मिलीं",
+    "similarJobs": "समान नौकरियाँ"
+  },
+  "apply": {
+    "heading": "{{title}} के लिए अप्लाई करें",
+    "name": "पूरा नाम",
+    "email": "ईमेल",
+    "phone": "फ़ोन",
+    "resume": "रिज़्यूमे",
+    "coverLetter": "कवर लेटर",
+    "submit": "आवेदन जमा करें",
+    "submitted": "आवेदन जमा हो गया",
+    "validation": {
+      "required": "यह फ़ील्ड आवश्यक है",
+      "email": "मान्य ईमेल दर्ज करें"
+    }
+  },
+  "profile": {
+    "title": "प्रोफ़ाइल",
+    "tabs": {
+      "overview": "ओवरव्यू",
+      "experience": "अनुभव",
+      "education": "शिक्षा",
+      "settings": "सेटिंग्स"
+    },
+    "fields": {
+      "name": "नाम",
+      "headline": "हेडलाइन",
+      "summary": "सारांश",
+      "location": "स्थान",
+      "skills": "कौशल"
+    }
+  },
+  "saved": {
+    "title": "सहेजी गई नौकरियां",
+    "empty": "आपने अभी तक कोई नौकरी सेव नहीं की है।"
+  },
+  "post": {
+    "title": "नौकरी पोस्ट करें",
+    "editTitle": "नौकरी संपादित करें",
+    "fields": {
+      "title": "नौकरी का शीर्षक",
+      "company": "कंपनी",
+      "location": "स्थान",
+      "type": "नौकरी का प्रकार",
+      "description": "विवरण"
+    }
+  },
+  "applications": {
+    "title": "आवेदन",
+    "status": {
+      "applied": "अप्लाइड",
+      "reviewing": "रीव्यू में",
+      "interview": "इंटरव्यू",
+      "offer": "ऑफर",
+      "rejected": "रिजेक्टेड"
+    },
+    "empty": "अभी तक कोई आवेदन नहीं।"
+  },
+  "assessments": {
+    "title": "मूल्यांकन",
+    "start": "शुरू करें",
+    "viewResults": "परिणाम देखें",
+    "noAssessments": "कोई मूल्यांकन उपलब्ध नहीं।"
+  },
+  "alerts": {
+    "title": "अलर्ट",
+    "empty": "कोई अलर्ट कॉन्फ़िगर नहीं।"
+  },
+  "reviews": {
+    "title": "कंपनी रिव्यू",
+    "empty": "अभी तक कोई रिव्यू नहीं।"
+  },
+  "team": {
+    "title": "टीम",
+    "empty": "कोई टीम सदस्य नहीं जोड़े गए।"
+  },
+  "interviews": {
+    "title": "इंटरव्यू",
+    "upcoming": "आगामी",
+    "past": "पिछले",
+    "scheduledFor": "{{date}} के लिए निर्धारित"
+  },
+  "lang": {
+    "label": "भाषा",
+    "en": "अंग्रेज़ी",
+    "te": "तेलुगु",
+    "hi": "हिंदी",
+    "short": {
+      "en": "EN",
+      "te": "TE",
+      "hi": "HI"
+    }
+  }
+}

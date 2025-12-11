@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isJobSaved, toggleSavedJob } from '../utils/savedJobs';
+import { useTranslation } from 'react-i18next';
 
 // PUBLIC_INTERFACE
 export default function JobCard({ job }) {
   /** Accessible job summary card with save/unsave (bookmark) toggle */
+  const { t } = useTranslation();
   const type = job.type || 'Unknown';
-  const location = job.location || 'Unspecified';
+  const location = job.location || t('job.location');
   const posted = job.postedAt ? new Date(job.postedAt).toLocaleDateString() : 'N/A';
 
   const [saved, setSaved] = useState(isJobSaved(job.id));
@@ -33,19 +35,19 @@ export default function JobCard({ job }) {
 
   // Minimal icon using text; could be replaced with SVG
   const icon = saved ? '🔖' : '📑';
-  const iconTitle = saved ? 'Unsave job' : 'Save job';
+  const iconTitle = saved ? t('job.unsaveJob') : t('job.saveJob');
 
   return (
     <article className="card" aria-labelledby={`job-${job.id}-title`}>
       <div className="card-head">
         <div>
-          <h3 id={`job-${job.id}-title`} className="card-title">{job.title || 'Untitled role'}</h3>
-          <p className="card-sub">{job.company || 'Company'}</p>
+          <h3 id={`job-${job.id}-title`} className="card-title">{job.title || t('job.details')}</h3>
+          <p className="card-sub">{job.company || t('job.company')}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div className="badges" aria-label="Job attributes">
+          <div className="badges" aria-label={t('job.details')}>
             <span className="badge type" aria-label={`Type ${type}`}>{type}</span>
-            <span className="badge location" aria-label={`Location ${location}`}>{location}</span>
+            <span className="badge location" aria-label={`${t('job.location')} ${location}`}>{location}</span>
           </div>
           <button
             className="page-btn"
@@ -76,10 +78,10 @@ export default function JobCard({ job }) {
       )}
 
       <div className="card-foot">
-        <Link className="link" to={`/jobs/${encodeURIComponent(job.id)}`} aria-label={`View details for ${job.title || 'job'}`}>
-          View details →
+        <Link className="link" to={`/jobs/${encodeURIComponent(job.id)}`} aria-label={`${t('job.details')} - ${job.title || ''}`}>
+          {t('job.details')} →
         </Link>
-        <span className="meta" aria-label="Posted date">
+        <span className="meta" aria-label={t('job.posted')}>
           {posted}
         </span>
       </div>

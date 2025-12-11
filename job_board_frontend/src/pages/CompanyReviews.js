@@ -10,16 +10,12 @@ import {
   normalizeCompanyKey,
   getLocalOwnerId,
 } from '../utils/reviews';
+import { useTranslation } from 'react-i18next';
 
 // PUBLIC_INTERFACE
 export default function CompanyReviewsPage() {
-  /** Company Reviews page
-   * - Route: /companies/:companyKey/reviews
-   * - Shows averages and total count
-   * - Sorting: newest (default) | highest overall
-   * - Add Review form with validation
-   * - Users can edit/delete their own reviews (ownership via local ownerId)
-   */
+  /** Company Reviews page */
+  const { t } = useTranslation();
   const { companyKey } = useParams();
   const navigate = useNavigate();
   const key = normalizeCompanyKey(companyKey);
@@ -93,7 +89,7 @@ export default function CompanyReviewsPage() {
     setError('');
   }
   function onDelete(id) {
-    const ok = window.confirm('Delete this review?');
+    const ok = window.confirm(t('actions.delete'));
     if (!ok) return;
     deleteReview(id);
   }
@@ -110,17 +106,17 @@ export default function CompanyReviewsPage() {
 
   return (
     <div className="main">
-      <div className="detail" role="region" aria-label="Company Reviews">
+      <div className="detail" role="region" aria-label={t('reviews.title')}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
           <div>
-            <h1 style={{ margin: 0, fontSize: '1.2rem' }}>Company Reviews</h1>
+            <h1 style={{ margin: 0, fontSize: '1.2rem' }}>{t('reviews.title')}</h1>
             <div className="meta" style={{ marginTop: 4 }}>
               {key || 'company'} • {stats.count} review{stats.count === 1 ? '' : 's'}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button className="page-btn" onClick={() => navigate(-1)} aria-label="Back">← Back</button>
-            <Link className="button" to="/">Jobs</Link>
+            <button className="page-btn" onClick={() => navigate(-1)} aria-label="Back">← {t('actions.close')}</button>
+            <Link className="button" to="/">{t('nav.jobs')}</Link>
           </div>
         </div>
 
@@ -182,7 +178,7 @@ export default function CompanyReviewsPage() {
 
         <section aria-label="Reviews list" style={{ display: 'grid', gap: 10 }}>
           {sorted.length === 0 ? (
-            <div className="meta">No reviews yet. Be the first to share your experience.</div>
+            <div className="meta">{t('reviews.empty')}</div>
           ) : (
             sorted.map((r) => (
               <ReviewItem

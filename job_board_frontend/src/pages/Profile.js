@@ -5,6 +5,7 @@ import { loadProfile, saveProfile, getDefaultProfile } from '../utils/storage';
 import { loadApplications } from '../utils/applications';
 import { getSkillScores } from '../utils/assessments';
 import { log } from '../theme';
+import { useTranslation } from 'react-i18next';
 
 function MyReviewsSection() {
   const [items, setItems] = useState([]);
@@ -69,6 +70,7 @@ export default function Profile() {
    * - Skill Scores (computed from assessments)
    * Data persists to localStorage as a first pass.
    */
+  const { t } = useTranslation();
   const [profile, setProfile] = useState(getDefaultProfile());
   const [tab, setTab] = useState('personal');
 
@@ -92,8 +94,8 @@ export default function Profile() {
 
   return (
     <div className="main">
-      <div className="detail" role="region" aria-label="Profile">
-        <h1 style={{ marginBottom: 12 }}>Your Profile</h1>
+      <div className="detail" role="region" aria-label={t('profile.title')}>
+        <h1 style={{ marginBottom: 12 }}>{t('profile.title')}</h1>
 
         <TabBar current={tab} onChange={setTab} />
 
@@ -131,7 +133,7 @@ export default function Profile() {
         </div>
         <div className="separator" />
         <div>
-          <Link className="button secondary" to="/interviews" aria-label="My interviews">My Interviews</Link>
+          <Link className="button secondary" to="/interviews" aria-label="My interviews">{t('interviews.title')}</Link>
         </div>
       </div>
     </div>
@@ -139,8 +141,9 @@ export default function Profile() {
 }
 
 function SkillScores({ hasScores, skillScores }) {
+  const { t } = useTranslation();
   return (
-    <Section title="Skill Scores" actions={<Link className="button" to="/assessments">Take Assessments</Link>}>
+    <Section title="Skill Scores" actions={<Link className="button" to="/assessments">{t('assessments.title')}</Link>}>
       {!hasScores ? (
         <div className="meta">No scores yet. Take assessments to build your skill scores.</div>
       ) : (
@@ -173,14 +176,15 @@ function SkillScores({ hasScores, skillScores }) {
 }
 
 function TabBar({ current, onChange }) {
+  const { t } = useTranslation();
   const tabs = [
-    { id: 'personal', label: 'Personal' },
+    { id: 'personal', label: t('profile.tabs.overview') },
     { id: 'resume', label: 'Resume' },
-    { id: 'skills', label: 'Skills' },
-    { id: 'experience', label: 'Experience' },
-    { id: 'education', label: 'Education' },
-    { id: 'applications', label: 'Applications' },
-    { id: 'myreviews', label: 'My Reviews' },
+    { id: 'skills', label: t('profile.fields.skills') },
+    { id: 'experience', label: t('profile.tabs.experience') },
+    { id: 'education', label: t('profile.tabs.education') },
+    { id: 'applications', label: t('applications.title') },
+    { id: 'myreviews', label: t('reviews.title') },
   ];
   return (
     <nav aria-label="Profile sections" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -258,23 +262,24 @@ function Section({ title, children, actions }) {
 }
 
 function PersonalForm({ value, onChange }) {
+  const { t } = useTranslation();
   const v = value || {};
   return (
-    <Section title="Personal details">
+    <Section title={t('profile.tabs.overview')}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <Field id="fullName" label="Full name">
+        <Field id="fullName" label={t('profile.fields.name')}>
           <TextInput id="fullName" value={v.fullName} onChange={(x) => onChange({ ...v, fullName: x })} placeholder="Jane Doe" />
         </Field>
-        <Field id="title" label="Professional title">
+        <Field id="title" label={t('profile.fields.headline')}>
           <TextInput id="title" value={v.title} onChange={(x) => onChange({ ...v, title: x })} placeholder="Frontend Engineer" />
         </Field>
-        <Field id="email" label="Email">
+        <Field id="email" label={t('apply.email')}>
           <TextInput id="email" type="email" value={v.email} onChange={(x) => onChange({ ...v, email: x })} placeholder="jane@example.com" />
         </Field>
-        <Field id="phone" label="Phone">
+        <Field id="phone" label={t('apply.phone')}>
           <TextInput id="phone" value={v.phone} onChange={(x) => onChange({ ...v, phone: x })} placeholder="+1 555 123 4567" />
         </Field>
-        <Field id="location" label="Location">
+        <Field id="location" label={t('profile.fields.location')}>
           <TextInput id="location" value={v.location} onChange={(x) => onChange({ ...v, location: x })} placeholder="Remote / City, State" />
         </Field>
         <Field id="website" label="Website">
@@ -287,7 +292,7 @@ function PersonalForm({ value, onChange }) {
           <TextInput id="github" value={v.github} onChange={(x) => onChange({ ...v, github: x })} placeholder="https://github.com/username" />
         </Field>
       </div>
-      <Field id="summary" label="Professional summary" hint="A short summary to highlight your background and goals.">
+      <Field id="summary" label={t('profile.fields.summary')} hint="A short summary to highlight your background and goals.">
         <TextArea id="summary" value={v.summary} onChange={(x) => onChange({ ...v, summary: x })} placeholder="Experienced frontend engineer with a focus on accessibility and performance..." rows={5} />
       </Field>
     </Section>
@@ -532,6 +537,7 @@ function EducationSection({ value, onChange }) {
 }
 
 function ItemCard({ title, subtitle, description, onEdit, onDelete }) {
+  const { t } = useTranslation();
   return (
     <div className="card" style={{ padding: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: 8 }}>
@@ -540,8 +546,8 @@ function ItemCard({ title, subtitle, description, onEdit, onDelete }) {
           <div className="meta">{subtitle}</div>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
-          <button className="page-btn" onClick={onEdit} aria-label="Edit">Edit</button>
-          <button className="page-btn" onClick={onDelete} aria-label="Delete">Delete</button>
+          <button className="page-btn" onClick={onEdit} aria-label={t('actions.edit')}>{t('actions.edit')}</button>
+          <button className="page-btn" onClick={onDelete} aria-label={t('actions.delete')}>{t('actions.delete')}</button>
         </div>
       </div>
       {description ? (

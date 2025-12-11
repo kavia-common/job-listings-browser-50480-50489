@@ -3,6 +3,7 @@ import { useLocation as useRouterLocation, useNavigate } from 'react-router-dom'
 import { fetchJobs } from '../api';
 import JobCard from '../components/JobCard';
 import { log } from '../theme';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Parse query params to an object with defaults and safety.
@@ -77,6 +78,7 @@ export default function JobList() {
    * Adds filters: location, category, salary range, experience level.
    * Persists filters to localStorage and URL query params.
    */
+  const { t } = useTranslation();
   const nav = useNavigate();
   const fromQuery = useQueryParams();
   const saved = loadSavedFilters();
@@ -228,7 +230,7 @@ export default function JobList() {
     return (
       <div className="main">
         <div role="status" aria-live="polite" className="detail">
-          <strong>Loading jobs…</strong>
+          <strong>{t('app.loading')}</strong>
           <div className="meta">Please wait while we fetch listings.</div>
         </div>
       </div>
@@ -239,7 +241,7 @@ export default function JobList() {
     return (
       <div className="main">
         <div role="alert" className="detail" aria-live="assertive">
-          <strong>Failed to load jobs</strong>
+          <strong>{t('app.error')}</strong>
           <div className="meta">{status.error}</div>
           <div className="separator" />
           <div className="meta">Using local mock data if available.</div>
@@ -262,47 +264,47 @@ export default function JobList() {
     <>
       <section className="controls" aria-label="Search and filters">
         <a className="button secondary" href="/saved" style={{ display: 'none' }} aria-hidden>Saved</a>
-        <label className="visually-hidden" htmlFor="search">Search</label>
+        <label className="visually-hidden" htmlFor="search">{t('filters.searchPlaceholder')}</label>
         <input
           id="search"
           className="input"
           type="search"
-          placeholder="Search title, company, tags…"
+          placeholder={t('filters.searchPlaceholder')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-label="Search jobs"
+          aria-label={t('filters.searchPlaceholder')}
         />
 
-        <label className="visually-hidden" htmlFor="jobtype">Job type</label>
+        <label className="visually-hidden" htmlFor="jobtype">{t('filters.type')}</label>
         <select
           id="jobtype"
           className="select"
           value={type}
           onChange={(e) => setType(e.target.value)}
-          aria-label="Filter by job type"
+          aria-label={t('filters.type')}
         >
-          <option value="all">All types</option>
+          <option value="all">{t('filters.type')}</option>
           <option value="full-time">Full-time</option>
           <option value="part-time">Part-time</option>
           <option value="contract">Contract</option>
         </select>
 
-        <label className="visually-hidden" htmlFor="location">Location</label>
+        <label className="visually-hidden" htmlFor="location">{t('filters.location')}</label>
         <select
           id="location"
           className="select"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          aria-label="Filter by location"
+          aria-label={t('filters.location')}
         >
-          <option value="all">All locations</option>
+          <option value="all">{t('filters.location')}</option>
           {uniqueLocations.map((loc) => (
             <option key={loc} value={loc}>{loc}</option>
           ))}
         </select>
 
-        <button className="button" type="button" onClick={clearAll} aria-label="Clear filters">
-          Clear
+        <button className="button" type="button" onClick={clearAll} aria-label={t('filters.clear')}>
+          {t('filters.clear')}
         </button>
       </section>
 
@@ -365,7 +367,7 @@ export default function JobList() {
         </select>
 
         <div className="button secondary" role="status" aria-live="polite">
-          {filtered.length} results
+          {t('filters.results', { count: filtered.length })}
         </div>
       </section>
 
@@ -394,7 +396,7 @@ export default function JobList() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="detail">
-            <strong>No jobs match your filters.</strong>
+            <strong>{t('job.noJobs')}</strong>
             <div className="meta">Try adjusting your search or filters.</div>
           </div>
         ) : (

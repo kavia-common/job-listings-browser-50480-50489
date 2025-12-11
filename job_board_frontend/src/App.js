@@ -21,6 +21,8 @@ import Team from './pages/Team';
 import { getActiveMember, listMembers, setActiveMember } from './utils/team';
 import Interviews from './pages/Interviews';
 import JobInterviews from './pages/JobInterviews';
+import LanguageSelector from './components/LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 function MemberSwitcher() {
   const members = listMembers();
@@ -65,6 +67,8 @@ function AssessmentRouter() {
 // PUBLIC_INTERFACE
 function App() {
   /** App root: header + routes wrapped by BrowserRouter to ensure Links and routes work */
+  const { t } = useTranslation();
+
   return (
     <BrowserRouter>
       <AlertsProvider>
@@ -74,21 +78,22 @@ function App() {
               <div className="brand">
                 <div className="brand-badge" aria-hidden>JB</div>
                 <div>
-                  <div className="brand-title">Job Browser</div>
+                  <div className="brand-title">{t('app.title')}</div>
                   <div className="brand-sub">Ocean Professional</div>
                 </div>
               </div>
               <div style={{ marginLeft: 'auto', display: 'flex', gap: 14, alignItems: 'center' }}>
-                <Link className="link" to="/" aria-label="Go to job list">Jobs</Link>
-                <Link className="link" to="/saved" aria-label="Go to saved jobs" title="Saved jobs">Saved</Link>
-                <Link className="link" to="/applications" aria-label="Go to applications" title="Applications">Applications</Link>
-                <Link className="link" to="/assessments" aria-label="Go to assessments" title="Assessments">Assessments</Link>
-                <Link className="link" to="/alerts" aria-label="Manage alerts" title="Alerts">Alerts</Link>
-                <Link className="link" to="/companies/acme/reviews" aria-label="Company reviews" title="Reviews">Reviews</Link>
-                <Link className="link" to="/team" aria-label="Team management" title="Team" style={{ color: '#F59E0B', fontWeight: 700 }}>Team</Link>
-                <Link className="link" to="/interviews" aria-label="My interviews">Interviews</Link>
-                <Link className="link" to="/profile" aria-label="Go to profile">Profile</Link>
-                <Link className="link" to="/post" aria-label="Post a job" title="Post a job">Post Job</Link>
+                <Link className="link" to="/" aria-label={t('nav.jobs')}>{t('nav.jobs')}</Link>
+                <Link className="link" to="/saved" aria-label={t('nav.saved')} title={t('nav.saved')}>{t('nav.saved')}</Link>
+                <Link className="link" to="/applications" aria-label={t('nav.applications')} title={t('nav.applications')}>{t('nav.applications')}</Link>
+                <Link className="link" to="/assessments" aria-label={t('nav.assessments')} title={t('nav.assessments')}>{t('nav.assessments')}</Link>
+                <Link className="link" to="/alerts" aria-label={t('nav.alerts')} title={t('nav.alerts')}>{t('nav.alerts')}</Link>
+                <Link className="link" to="/companies/acme/reviews" aria-label={t('nav.reviews')} title={t('nav.reviews')}>{t('nav.reviews')}</Link>
+                <Link className="link" to="/team" aria-label={t('nav.team')} title={t('nav.team')} style={{ color: '#F59E0B', fontWeight: 700 }}>{t('nav.team')}</Link>
+                <Link className="link" to="/interviews" aria-label={t('interviews.title')}>{t('interviews.title')}</Link>
+                <Link className="link" to="/profile" aria-label={t('nav.profile')}>{t('nav.profile')}</Link>
+                <Link className="link" to="/post" aria-label={t('nav.postJob')} title={t('nav.postJob')}>{t('nav.postJob')}</Link>
+                <LanguageSelector />
                 <MemberSwitcher />
               </div>
             </div>

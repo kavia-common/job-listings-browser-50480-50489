@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { fetchJobs } from '../api';
 import JobCard from '../components/JobCard';
 import { getSavedJobsArray, toggleSavedJob } from '../utils/savedJobs';
+import { useTranslation } from 'react-i18next';
 
 // PUBLIC_INTERFACE
 export default function SavedJobsPage() {
@@ -10,6 +11,7 @@ export default function SavedJobsPage() {
    * Syncs with saved state changes via window event.
    * If a saved job becomes paused/hidden from list, we show an inline note with option to remove from saved.
    */
+  const { t } = useTranslation();
   const [allJobs, setAllJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState('');
@@ -26,7 +28,7 @@ export default function SavedJobsPage() {
           setLoading(false);
         })
         .catch((e) => {
-          setErr(e.message || 'Failed to load jobs');
+          setErr(e.message || t('app.error'));
           setAllJobs([]);
           setLoading(false);
         });
@@ -41,7 +43,7 @@ export default function SavedJobsPage() {
       window.removeEventListener('savedjobs:change', onChange);
       window.removeEventListener('userjobs:change', onUserJobs);
     };
-  }, []);
+  }, [t]);
 
   const savedSet = useMemo(() => new Set(savedIds.map(String)), [savedIds]);
   const items = useMemo(
@@ -58,17 +60,17 @@ export default function SavedJobsPage() {
   if (loading) {
     return (
       <div className="main">
-        <div className="detail" role="status"><strong>Loading saved jobs…</strong></div>
+        <div className="detail" role="status"><strong>{t('app.loading')}</strong></div>
       </div>
     );
   }
 
   return (
-    <div className="main" role="region" aria-label="Saved jobs">
+    <div className="main" role="region" aria-label={t('saved.title')}>
       {items.length === 0 && missingIds.length === 0 ? (
         <div className="detail">
-          <strong>No saved jobs yet</strong>
-          <div className="meta">Tap the bookmark icon on a job card or job details to save it here.</div>
+          <h2 style={{ marginTop: 0 }}>{t('saved.title')}</h2>
+          <div className="meta">{t('saved.empty')}</div>
         </div>
       ) : (
         <>
@@ -99,13 +101,14 @@ export default function SavedJobsPage() {
           )}
           {items.length > 0 && (
             <>
+              <h2 style={{ marginTop: 0 }}>{t('saved.title')}</h2>
               <div className="grid">
                 {items.map((job) => (
                   <JobCard key={job.id} job={job} />
                 ))}
               </div>
               <div className="meta" style={{ marginTop: 8 }}>
-                Showing {items.length} saved {items.length === 1 ? 'job' : 'jobs'}.
+                Showing {items.length} {items.length === 1 ? 'job' : 'jobs'}.
               </div>
             </>
           )}

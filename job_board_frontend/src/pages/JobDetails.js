@@ -6,17 +6,18 @@ import { isJobSaved, toggleSavedJob } from '../utils/savedJobs';
 import { isUserOwnedJob, togglePauseJob, deleteUserJob } from '../utils/userJobs';
 import { listCompanyReviews, computeAverages, normalizeCompanyKey } from '../utils/reviews';
 import { getActiveMember, getTeam } from '../utils/team';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Format a salary range using Ocean Professional themed concise style.
  */
-function formatSalary(min, max) {
+function formatSalary(min, max, t) {
   const hasMin = Number.isFinite(min);
   const hasMax = Number.isFinite(max);
   const fmt = (n) =>
     n >= 1000 ? `$${Math.round(n / 1000)}k` : `$${n}`;
   if (hasMin && hasMax) return `${fmt(min)}–${fmt(max)}`;
-  if (hasMin) return `From ${fmt(min)}`;
+  if (hasMin) return `${t('filters.results', { count: fmt(min) })}` || `From ${fmt(min)}`;
   if (hasMax) return `Up to ${fmt(max)}`;
   return 'Not specified';
 }
@@ -27,6 +28,7 @@ export default function JobDetails() {
    * Displays details for a single job by id.
    * Adds Save/Unsave toggle and owner/team management actions.
    */
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [state, setState] = useState({ loading: true, error: null, jobs: [] });
@@ -59,7 +61,7 @@ export default function JobDetails() {
     return (
       <div className="main">
         <div className="detail" role="status" aria-live="polite">
-          <strong>Loading job…</strong>
+          <strong>{t('app.loading')}</strong>
           <div className="meta">Fetching job details.</div>
         </div>
       </div>
@@ -70,11 +72,11 @@ export default function JobDetails() {
     return (
       <div className="main">
         <div className="detail" role="alert">
-          <strong>Failed to load job.</strong>
+          <strong>{t('app.error')}</strong>
           <div className="meta">{state.error}</div>
           <div className="separator" />
-          <button className="button" onClick={() => navigate('/')} aria-label="Back to job list">
-            ← Back to list
+          <button className="button" onClick={() => navigate('/')} aria-label={t('nav.jobs')}>
+            ← {t('nav.jobs')}
           </button>
         </div>
       </div>
@@ -85,20 +87,20 @@ export default function JobDetails() {
     return (
       <div className="main">
         <div className="detail" role="alert">
-          <strong>Job not found</strong>
+          <strong>{t('job.noJobs')}</strong>
           <div className="meta">The job may have been removed or the link is invalid.</div>
           <div className="separator" />
-          <button className="button" onClick={() => navigate('/')} aria-label="Back to job list">
-            ← Back to list
+          <button className="button" onClick={() => navigate('/')} aria-label={t('nav.jobs')}>
+            ← {t('nav.jobs')}
           </button>
         </div>
       </div>
     );
   }
 
-  const company = job.company || 'Company';
-  const title = job.title || 'Untitled role';
-  const location = job.location || 'Unspecified';
+  const company = job.company || t('job.company');
+  const title = job.title || t('job.details');
+  const location = job.location || t('job.location');
   const type = (job.type || 'Unknown').toString();
   const posted = job.postedAt ? new Date(job.postedAt).toLocaleDateString() : 'N/A';
 
@@ -112,7 +114,7 @@ export default function JobDetails() {
 
   const applyUrl = job.applyUrl || job.applyURL || job.url || '';
   const existingApp = getApplication(String(id));
-  const appliedInfo = existingApp ? `Applied ${new Date(existingApp.submittedAt).toLocaleString()}` : '';
+  const appliedInfo = existingApp ? t('apply.submitted') : '';
 
   function onApply() {
     if (applyUrl && /^https?:\/\//i.test(String(applyUrl))) {
@@ -127,7 +129,7 @@ export default function JobDetails() {
     setSaved(next);
   }
 
-  const saveTitle = saved ? 'Unsave job' : 'Save job';
+  const saveTitle = saved ? t('job.unsaveJob') : t('job.saveJob');
   const saveIcon = saved ? '🔖' : '📑';
 
   const userOwns = isUserOwnedJob(String(id));
@@ -147,7 +149,7 @@ export default function JobDetails() {
   }
 
   function onDelete() {
-    const ok = window.confirm('Delete this job? This cannot be undone.');
+    const ok = window.confirm(t('actions.delete'));
     if (!ok) return;
     const removed = deleteUserJob(String(id));
     if (removed) {
@@ -158,10 +160,10 @@ export default function JobDetails() {
 
   return (
     <div className="main">
-      <div className="detail" role="region" aria-label="Job details">
+      <div className="detail" role="region" aria-label={t('job.details')}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
           <button className="button secondary" onClick={() => navigate(-1)} aria-label="Go back">
-            ← Back
+            ← {t('actions.close')}
           </button>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             {appliedInfo ? (
@@ -169,12 +171,12 @@ export default function JobDetails() {
             ) : null}
             {paused ? (
               <span className="badge" title="Paused" aria-label="Job is paused" style={{ background: 'rgba(245,158,11,.08)', borderColor: 'rgba(245,158,11,.25)', color: '#b45309' }}>
-                Paused
+                {t('actions.pause')}
               </span>
             ) : null}
             {teamOwned ? (
               <span className="badge" title="Team-owned" aria-label="Team-owned" style={{ background: 'rgba(37,99,235,.08)', borderColor: 'rgba(37,99,235,.25)', color: '#1d4ed8', fontWeight: 700 }}>
-                Team-owned
+                {t('team.title')}
               </span>
             ) : null}
             <button
@@ -194,18 +196,18 @@ export default function JobDetails() {
             >
               {saveIcon}
             </button>
-            <button className="button" onClick={onApply} aria-label="Apply to this job" disabled={paused && !canManage}>
-              {appliedInfo ? 'Update application' : 'Apply'}
+            <button className="button" onClick={onApply} aria-label={t('actions.apply')} disabled={paused && !canManage}>
+              {existingApp ? t('apply.submit') : t('actions.apply')}
             </button>
             {canManage && (
               <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-                <a className="page-btn" href={`/jobs/${encodeURIComponent(id)}/edit`} aria-label="Edit job">Edit</a>
-                <button className="page-btn" onClick={onPauseToggle} aria-label={paused ? 'Unpause job' : 'Pause job'}>
-                  {paused ? 'Unpause' : 'Pause'}
+                <a className="page-btn" href={`/jobs/${encodeURIComponent(id)}/edit`} aria-label={t('actions.edit')}>{t('actions.edit')}</a>
+                <button className="page-btn" onClick={onPauseToggle} aria-label={paused ? t('actions.unpause') : t('actions.pause')}>
+                  {paused ? t('actions.unpause') : t('actions.pause')}
                 </button>
                 <a className="page-btn" href={`/jobs/${encodeURIComponent(id)}/interviews`} aria-label="Manage interviews">Manage Interviews</a>
-                <button className="page-btn" onClick={onDelete} aria-label="Delete job" style={{ borderColor: 'var(--color-error)', color: 'var(--color-error)' }}>
-                  Delete
+                <button className="page-btn" onClick={onDelete} aria-label={t('actions.delete')} style={{ borderColor: 'var(--color-error)', color: 'var(--color-error)' }}>
+                  {t('actions.delete')}
                 </button>
               </div>
             )}
@@ -250,9 +252,9 @@ export default function JobDetails() {
           <span>•</span>
           <span>{type}</span>
           <span>•</span>
-          <span>Posted {posted}</span>
+          <span>{t('job.posted')} {posted}</span>
           <span>•</span>
-          <span>Salary: {formatSalary(salaryMin, salaryMax)}</span>
+          <span>Salary: {formatSalary(salaryMin, salaryMax, t)}</span>
         </div>
 
         {Array.isArray(job.tags) && job.tags.length > 0 && (
@@ -278,14 +280,15 @@ export default function JobDetails() {
 }
 
 function ReviewsPreview({ companyName }) {
+  const { t } = useTranslation();
   const key = normalizeCompanyKey(companyName);
   const reviews = listCompanyReviews(key).slice(0, 2);
   if (reviews.length === 0) {
     return (
       <div>
-        <div className="meta">No reviews for this company yet.</div>
+        <div className="meta">{t('reviews.empty')}</div>
         <div style={{ marginTop: 8 }}>
-          <a className="link" href={`/companies/${encodeURIComponent(key)}/reviews`}>Write the first review →</a>
+          <a className="link" href={`/companies/${encodeURIComponent(key)}/reviews`}>{t('reviews.title')} →</a>
         </div>
       </div>
     );
@@ -294,9 +297,9 @@ function ReviewsPreview({ companyName }) {
   return (
     <section aria-label="Recent company reviews" className="card" style={{ padding: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-        <strong>Company reviews</strong>
+        <strong>{t('reviews.title')}</strong>
         <a className="page-btn" href={`/companies/${encodeURIComponent(key)}/reviews`} aria-label="Read all reviews">
-          Read all reviews →
+          {t('actions.manage')} →
         </a>
       </div>
       <div className="separator" />

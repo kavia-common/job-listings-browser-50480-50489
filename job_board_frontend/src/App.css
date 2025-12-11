@@ -369,3 +369,13 @@ body {
 .member-switcher select {
   height: 32px;
 }
+
+/* Language selector */
+.lang-selector:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+.muted {
+  color: #6b7280;
+  font-size: 0.9rem;
+}

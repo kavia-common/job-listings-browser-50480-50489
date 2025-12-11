@@ -6,6 +6,7 @@ import {
   saveApplications,
 } from '../utils/applications';
 import { loadProfile } from '../utils/storage';
+import { useTranslation } from 'react-i18next';
 
 // Helpers for URL query params
 function useQuery() {
@@ -61,13 +62,9 @@ function Badge({ status }) {
 // PUBLIC_INTERFACE
 export default function ApplicationsPage() {
   /**
-   * Applications management page:
-   * - List all local applications
-   * - Filter by status and job title
-   * - Quick-view applicant profile from local storage
-   * - Download resume if available
-   * - Update status (Shortlist/Reject/Hire) persisted in localStorage with timestamp
+   * Applications management page
    */
+  const { t } = useTranslation();
   const qs = useQuery();
   const navigate = useNavigate();
 
@@ -88,12 +85,6 @@ export default function ApplicationsPage() {
       setApps(loadApplications());
     } catch {
       setApps({});
-    }
-    // Optionally pre-filter by jobId
-    const jobId = qs.get('jobId');
-    if (jobId) {
-      // Could preset a local filter (we keep full list; we'll show a note and allow search by job title)
-      // We'll set titleFilter to job title for convenience once jobs load.
     }
     return () => ctrl.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -156,7 +147,6 @@ export default function ApplicationsPage() {
 
   function resumeAction(app) {
     if (app?.resume?.dataUrl) {
-      // Open in new tab for preview; also supports download via anchor
       window.open(app.resume.dataUrl, '_blank', 'noopener,noreferrer');
     } else if (profile?.resume?.dataUrl) {
       window.open(profile.resume.dataUrl, '_blank', 'noopener,noreferrer');
@@ -169,15 +159,15 @@ export default function ApplicationsPage() {
 
   return (
     <div className="main">
-      <div className="detail" role="region" aria-label="Applications management">
+      <div className="detail" role="region" aria-label={t('applications.title')}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
-          <h1 style={{ margin: 0 }}>Applications</h1>
+          <h1 style={{ margin: 0 }}>{t('applications.title')}</h1>
           <div style={{ display: 'flex', gap: 8 }}>
-            <Link className="page-btn" to="/" aria-label="Back to job list">
-              ← Jobs
+            <Link className="page-btn" to="/" aria-label={t('nav.jobs')}>
+              ← {t('nav.jobs')}
             </Link>
-            <Link className="page-btn" to="/profile" aria-label="Go to profile">
-              Profile
+            <Link className="page-btn" to="/profile" aria-label={t('nav.profile')}>
+              {t('nav.profile')}
             </Link>
           </div>
         </div>
@@ -212,7 +202,7 @@ export default function ApplicationsPage() {
           />
 
           <div className="button secondary" role="status" aria-live="polite">
-            {filtered.length} result{filtered.length === 1 ? '' : 's'}
+            {filtered.length} {filtered.length === 1 ? 'result' : 'results'}
           </div>
         </section>
 
