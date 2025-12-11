@@ -3,16 +3,20 @@ import { Link } from 'react-router-dom';
 // PUBLIC_INTERFACE
 export default function JobCard({ job }) {
   /** Accessible job summary card */
+  const type = job.type || 'Unknown';
+  const location = job.location || 'Unspecified';
+  const posted = job.postedAt ? new Date(job.postedAt).toLocaleDateString() : 'N/A';
+
   return (
     <article className="card" aria-labelledby={`job-${job.id}-title`}>
       <div className="card-head">
         <div>
-          <h3 id={`job-${job.id}-title`} className="card-title">{job.title}</h3>
-          <p className="card-sub">{job.company}</p>
+          <h3 id={`job-${job.id}-title`} className="card-title">{job.title || 'Untitled role'}</h3>
+          <p className="card-sub">{job.company || 'Company'}</p>
         </div>
         <div className="badges" aria-label="Job attributes">
-          <span className="badge type" aria-label={`Type ${job.type}`}>{job.type}</span>
-          <span className="badge location" aria-label={`Location ${job.location}`}>{job.location}</span>
+          <span className="badge type" aria-label={`Type ${type}`}>{type}</span>
+          <span className="badge location" aria-label={`Location ${location}`}>{location}</span>
         </div>
       </div>
 
@@ -25,11 +29,11 @@ export default function JobCard({ job }) {
       )}
 
       <div className="card-foot">
-        <Link className="link" to={`/jobs/${encodeURIComponent(job.id)}`} aria-label={`View details for ${job.title}`}>
+        <Link className="link" to={`/jobs/${encodeURIComponent(job.id)}`} aria-label={`View details for ${job.title || 'job'}`}>
           View details →
         </Link>
         <span className="meta" aria-label="Posted date">
-          {new Date(job.postedAt).toLocaleDateString()}
+          {posted}
         </span>
       </div>
     </article>
