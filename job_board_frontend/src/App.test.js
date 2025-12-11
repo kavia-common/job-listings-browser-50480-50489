@@ -4,8 +4,14 @@ import App from './App';
 test('renders header brand', () => {
   render(<App />);
   expect(screen.getByText(/Job Browser/i)).toBeInTheDocument();
-  // Ensure Saved link exists
-  expect(screen.getByRole('link', { name: /saved jobs/i })).toBeInTheDocument();
-  // Ensure Post Job link exists
-  expect(screen.getByRole('link', { name: /post a job/i })).toBeInTheDocument();
+});
+
+test('shows key navigation links', () => {
+  render(<App />);
+  expect(screen.getByRole('link', { name: /jobs/i })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /saved/i })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /applications/i })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /assessments/i })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /profile/i })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /post job/i })).toBeInTheDocument();
 });

@@ -1,16 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { loadProfile, saveProfile, getDefaultProfile } from '../utils/storage';
 import { loadApplications } from '../utils/applications';
+import { getSkillScores } from '../utils/assessments';
 import { log } from '../theme';
 
 // PUBLIC_INTERFACE
 export default function Profile() {
   /**
-   * Profile management page with tabs:
+   * Profile management page with tabs and Skill Scores integration:
    * - Personal details
    * - Resume upload with preview/remove
    * - Skills list with add/remove (tags)
    * - Experience & Education CRUD
+   * - Applications history
+   * - Skill Scores (computed from assessments)
    * Data persists to localStorage as a first pass.
    */
   const [profile, setProfile] = useState(getDefaultProfile());
@@ -25,6 +29,15 @@ export default function Profile() {
     if (!ok) log('warn', 'Failed saving profile to localStorage');
   }, [profile]);
 
+  const skillScores = useMemo(() => {
+    try {
+      return getSkillScores();
+    } catch {
+      return { scoresBySkill: {}, lastUpdated: null };
+    }
+  }, []);
+  const hasScores = !!skillScores && Object.keys(skillScores.scoresBySkill || {}).length > 0;
+
   return (
     <div className="main">
       <div className="detail" role="region" aria-label="Profile">
@@ -35,7 +48,10 @@ export default function Profile() {
         <div className="separator" />
 
         {tab === 'personal' && (
-          <PersonalForm value={profile.personal} onChange={(v) => setProfile({ ...profile, personal: v })} />
+          <>
+            <SkillScores hasScores={hasScores} skillScores={skillScores} />
+            <PersonalForm value={profile.personal} onChange={(v) => setProfile({ ...profile, personal: v })} />
+          </>
         )}
         {tab === 'resume' && (
           <ResumeSection value={profile.resume} onChange={(v) => setProfile({ ...profile, resume: v })} />
@@ -58,6 +74,40 @@ export default function Profile() {
         {tab === 'applications' && <ApplicationsSection />}
       </div>
     </div>
+  );
+}
+
+function SkillScores({ hasScores, skillScores }) {
+  return (
+    <Section title="Skill Scores" actions={<Link className="button" to="/assessments">Take Assessments</Link>}>
+      {!hasScores ? (
+        <div className="meta">No scores yet. Take assessments to build your skill scores.</div>
+      ) : (
+        <>
+          <div className="tags" aria-label="Skill scores">
+            {Object.entries(skillScores.scoresBySkill).map(([skill, info]) => (
+              <span key={skill} className="tag" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <strong>{skill}</strong>
+                <span
+                  style={{
+                    background: 'rgba(245, 158, 11, 0.15)',
+                    color: '#b45309',
+                    padding: '2px 6px',
+                    borderRadius: 999,
+                    fontSize: 12,
+                  }}
+                >
+                  {info.score}%
+                </span>
+              </span>
+            ))}
+          </div>
+          <div className="meta" style={{ marginTop: 6 }}>
+            Last updated: {skillScores.lastUpdated ? new Date(skillScores.lastUpdated).toLocaleString() : '—'}
+          </div>
+        </>
+      )}
+    </Section>
   );
 }
 

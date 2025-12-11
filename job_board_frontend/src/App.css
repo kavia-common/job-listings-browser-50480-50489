@@ -1,4 +1,4 @@
-/* Ocean Professional Theme Variables */
+ /* Ocean Professional Theme Variables */
 :root {
   --color-primary: #2563EB;
   --color-secondary: #F59E0B;
@@ -123,6 +123,7 @@ body {
   justify-content: center;
   gap: 8px;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .button.secondary {
@@ -334,4 +335,16 @@ body {
   overflow: hidden;
   clip: rect(1px, 1px, 1px, 1px);
   white-space: nowrap;
+}
+
+/* Simple utilities used by Assessments pages */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.btn {
+  cursor: pointer;
+  border: none;
 }
