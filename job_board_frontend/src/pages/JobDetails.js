@@ -198,11 +198,12 @@ export default function JobDetails() {
               {appliedInfo ? 'Update application' : 'Apply'}
             </button>
             {canManage && (
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
                 <a className="page-btn" href={`/jobs/${encodeURIComponent(id)}/edit`} aria-label="Edit job">Edit</a>
                 <button className="page-btn" onClick={onPauseToggle} aria-label={paused ? 'Unpause job' : 'Pause job'}>
                   {paused ? 'Unpause' : 'Pause'}
                 </button>
+                <a className="page-btn" href={`/jobs/${encodeURIComponent(id)}/interviews`} aria-label="Manage interviews">Manage Interviews</a>
                 <button className="page-btn" onClick={onDelete} aria-label="Delete job" style={{ borderColor: 'var(--color-error)', color: 'var(--color-error)' }}>
                   Delete
                 </button>

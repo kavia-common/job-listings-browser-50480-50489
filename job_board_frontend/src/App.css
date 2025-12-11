@@ -349,6 +349,22 @@ body {
   border: none;
 }
 
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.btn-subtle {
+  background: #F3F4F6;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
 /* Member switcher tweaks */
 .member-switcher select {
   height: 32px;

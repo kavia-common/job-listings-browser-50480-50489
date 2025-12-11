@@ -273,6 +273,14 @@ export default function ApplicationsPage() {
                       >
                         Resume
                       </button>
+                      <Link
+                        className="page-btn"
+                        to={`/jobs/${encodeURIComponent(a.jobId)}/interviews`}
+                        aria-label="Schedule interview"
+                        title="Schedule interview"
+                      >
+                        Schedule Interview
+                      </Link>
                     </div>
                   </div>
 

@@ -13,6 +13,21 @@ export function useToasts() {
 }
 
 // PUBLIC_INTERFACE
+export function useAlerts() {
+  /**
+   * Compatibility hook for pages expecting useAlerts with pushAlert function.
+   * Returns an object with pushAlert(messageObj) which forwards to toasts.push(messageObj.message)
+   */
+  const { push } = useToasts();
+  return {
+    pushAlert: ({ message }) => {
+      if (!message) return;
+      push(String(message));
+    },
+  };
+}
+
+// PUBLIC_INTERFACE
 export function AlertsProvider({ children }) {
   /**
    * Watches for jobs changes (on load and userjobs:change) and runs alerts matcher.

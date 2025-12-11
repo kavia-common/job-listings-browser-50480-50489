@@ -92,6 +92,16 @@ export function listAllApplications() {
   return Object.values(apps || {}).sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
 }
 
+/**
+ * Convenience helper used by employer interviews page to get applications for a job.
+ * Returns an array (0 or 1 record currently, as the model is one application per job).
+ */
+// PUBLIC_INTERFACE
+export function getApplicationsForJob(jobId) {
+  const app = getApplication(String(jobId));
+  return app ? [app] : [];
+}
+
 // PUBLIC_INTERFACE
 export function listApplicationsByJob(jobId) {
   /** Return application for a specific jobId as single-element array if exists (current model supports one per job) */

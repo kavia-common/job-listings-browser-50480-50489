@@ -19,6 +19,8 @@ import AlertsPage from './pages/Alerts';
 import { AlertsProvider } from './utils/AlertsProvider';
 import Team from './pages/Team';
 import { getActiveMember, listMembers, setActiveMember } from './utils/team';
+import Interviews from './pages/Interviews';
+import JobInterviews from './pages/JobInterviews';
 
 function MemberSwitcher() {
   const members = listMembers();
@@ -84,6 +86,7 @@ function App() {
                 <Link className="link" to="/alerts" aria-label="Manage alerts" title="Alerts">Alerts</Link>
                 <Link className="link" to="/companies/acme/reviews" aria-label="Company reviews" title="Reviews">Reviews</Link>
                 <Link className="link" to="/team" aria-label="Team management" title="Team" style={{ color: '#F59E0B', fontWeight: 700 }}>Team</Link>
+                <Link className="link" to="/interviews" aria-label="My interviews">Interviews</Link>
                 <Link className="link" to="/profile" aria-label="Go to profile">Profile</Link>
                 <Link className="link" to="/post" aria-label="Post a job" title="Post a job">Post Job</Link>
                 <MemberSwitcher />
@@ -94,6 +97,7 @@ function App() {
           <Routes>
             <Route path="/" element={<JobList />} />
             <Route path="/jobs/:id" element={<JobDetails />} />
+            <Route path="/jobs/:id/interviews" element={<JobInterviews />} />
             <Route path="/jobs/:id/apply" element={<ApplyPage />} />
             <Route path="/jobs/:id/edit" element={<EditJob />} />
             <Route path="/profile" element={<Profile />} />
@@ -107,6 +111,8 @@ function App() {
             <Route path="/assessments/results" element={<AssessmentResults />} />
             <Route path="/assessments/:id" element={<AssessmentRouter />} />
             <Route path="/companies/:companyKey/reviews" element={<CompanyReviewsPage />} />
+            {/* Candidate interviews list */}
+            <Route path="/interviews" element={<Interviews />} />
           </Routes>
         </div>
       </AlertsProvider>

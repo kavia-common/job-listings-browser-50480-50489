@@ -129,6 +129,10 @@ export default function Profile() {
         <div className="meta">
           Looking for new roles? Create <Link className="link" to="/alerts">Job Alerts</Link> to get notified when matches appear.
         </div>
+        <div className="separator" />
+        <div>
+          <Link className="button secondary" to="/interviews" aria-label="My interviews">My Interviews</Link>
+        </div>
       </div>
     </div>
   );
