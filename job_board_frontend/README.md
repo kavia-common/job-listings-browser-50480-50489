@@ -30,7 +30,18 @@ Expected endpoint: GET ${REACT_APP_API_BASE}/jobs -> JSON array of jobs:
 - Search and filters (type, location) client-side
 - Pagination
 - Accessible, responsive UI
-- Routing: / for list, /jobs/:id for details
+- Routing: / for list, /jobs/:id for details, /alerts for Job Alerts
+
+### Job Alerts
+
+Client-side rules stored in localStorage. Channels:
+- In-app toast: immediate, stored in history.
+- Push (browser Notifications API): optional, ask permission in /alerts.
+- Email: simulated only; entries are recorded in the Alerts history but no real emails are sent.
+
+Future email/push integration:
+- Email: connect to a backend service (e.g., via REACT_APP_API_BASE) exposing an endpoint to send emails (SendGrid, Mailgun, SES). The frontend should POST alert events to backend; backend handles actual delivery.
+- Push: use a service worker and Web Push (VAPID) with a backend to store subscriptions and send push messages. This demo uses Notification API locally without service workers.
 
 ## Tests
 

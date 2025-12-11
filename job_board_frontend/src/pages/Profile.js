@@ -72,6 +72,10 @@ export default function Profile() {
           />
         )}
         {tab === 'applications' && <ApplicationsSection />}
+        <div className="separator" />
+        <div className="meta">
+          Looking for new roles? Create <Link className="link" to="/alerts">Job Alerts</Link> to get notified when matches appear.
+        </div>
       </div>
     </div>
   );

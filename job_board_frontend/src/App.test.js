@@ -12,6 +12,7 @@ test('shows key navigation links', () => {
   expect(screen.getByRole('link', { name: /saved/i })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /applications/i })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /assessments/i })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /alerts/i })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /profile/i })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /post job/i })).toBeInTheDocument();
 });

@@ -370,6 +370,23 @@ export default function JobList() {
       </section>
 
       <div className="main" role="region" aria-label="Job results">
+        <div className="card" style={{ marginBottom: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <div style={{ fontWeight: 600 }}>Want alerts for these results?</div>
+            <a
+              className="page-btn"
+              href={`/alerts?${new URLSearchParams({
+                q: query || '',
+                company: '',
+                location: location !== 'all' ? location : '',
+                category: category !== 'all' ? category : '',
+              }).toString()}`}
+              aria-label="Create alert from current filters"
+            >
+              Create alert →
+            </a>
+          </div>
+        </div>
         {jobs.length === 0 ? (
           <div className="detail">
             <strong>No jobs available.</strong>
