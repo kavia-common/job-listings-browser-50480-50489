@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { fetchJobs } from '../api';
 import { getApplication } from '../utils/applications';
+import { isJobSaved, toggleSavedJob } from '../utils/savedJobs';
 
 /**
  * Format a salary range using Ocean Professional themed concise style.
@@ -24,11 +25,11 @@ export default function JobDetails() {
    * - Uses the same data source as list (api.js) and falls back to mockJobs.json.
    * - Gracefully handles missing fields.
    * - Shows company/location/type, tags, salary range, and an Apply action.
+   * - Adds Save/Unsave toggle persisted to localStorage (savedJobs).
    */
   const { id } = useParams();
   const navigate = useNavigate();
   const [state, setState] = useState({ loading: true, error: null, jobs: [] });
-  const [showApply, setShowApply] = useState(false);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -42,6 +43,17 @@ export default function JobDetails() {
     () => state.jobs.find((j) => String(j.id) === String(id)),
     [state.jobs, id]
   );
+
+  // Hooks must be declared before any early returns
+  const [saved, setSaved] = useState(isJobSaved(id));
+
+  useEffect(() => {
+    const onChange = (e) => {
+      if (String(e.detail?.id) === String(id)) setSaved(Boolean(e.detail?.saved));
+    };
+    window.addEventListener('savedjobs:change', onChange);
+    return () => window.removeEventListener('savedjobs:change', onChange);
+  }, [id]);
 
   if (state.loading) {
     return (
@@ -110,6 +122,14 @@ export default function JobDetails() {
     }
   }
 
+  function onToggleSave() {
+    const next = toggleSavedJob(id);
+    setSaved(next);
+  }
+
+  const saveTitle = saved ? 'Unsave job' : 'Save job';
+  const saveIcon = saved ? '🔖' : '📑';
+
   return (
     <div className="main">
       <div className="detail" role="region" aria-label="Job details">
@@ -121,6 +141,23 @@ export default function JobDetails() {
             {appliedInfo ? (
               <span className="meta" style={{ color: '#1d4ed8', fontWeight: 600 }}>{appliedInfo}</span>
             ) : null}
+            <button
+              className="page-btn"
+              aria-pressed={saved}
+              onClick={onToggleSave}
+              title={saveTitle}
+              aria-label={saveTitle}
+              style={{
+                minWidth: 36,
+                height: 36,
+                borderColor: saved ? 'rgba(245, 158, 11, 0.35)' : undefined,
+                background: saved ? 'rgba(245, 158, 11, 0.12)' : undefined,
+                color: saved ? '#b45309' : undefined,
+                fontWeight: saved ? 700 : 500,
+              }}
+            >
+              {saveIcon}
+            </button>
             <button className="button" onClick={onApply} aria-label="Apply to this job">
               {appliedInfo ? 'Update application' : 'Apply'}
             </button>
@@ -183,8 +220,6 @@ export default function JobDetails() {
             <p key={i}>{p}</p>
           ))}
         </div>
-
-
       </div>
     </div>
   );

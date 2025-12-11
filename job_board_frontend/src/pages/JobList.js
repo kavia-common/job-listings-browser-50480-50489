@@ -252,6 +252,7 @@ export default function JobList() {
   return (
     <>
       <section className="controls" aria-label="Search and filters">
+        <a className="button secondary" href="/saved" style={{ display: 'none' }} aria-hidden>Saved</a>
         <label className="visually-hidden" htmlFor="search">Search</label>
         <input
           id="search"
