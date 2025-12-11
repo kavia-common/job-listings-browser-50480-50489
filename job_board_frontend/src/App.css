@@ -317,6 +317,16 @@ body {
   font-weight: 700;
 }
 
+/* Profile helpers */
+.input[type="file"] {
+  padding: 8px;
+}
+.object-preview {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
 /* Utilities */
 .visually-hidden {
   position: absolute!important;
